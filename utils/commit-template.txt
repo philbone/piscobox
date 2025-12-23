@@ -1,0 +1,21 @@
+#
+# Commit Type (select one):
+# - feat: New functionality
+# - fix: Bug fix
+# - docs: Documentation changes
+# - style: Formatting changes
+# - refactor: Code refactoring
+# - test: Add or modify tests
+# - chore: Maintenance tasks
+
+# Short description (max. 50 characters):
+
+# Detailed description (optional):
+
+# Related issues (e.g., #123):
+
+# Does it require documentation changes?
+
+# - [ ] Yes
+# - [ ] No
+#
