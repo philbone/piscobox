@@ -32,6 +32,6 @@ Vagrant.configure("2") do |config|
   # MODULAR PROVISIONING
   # ============================================================================
   config.vm.provision "shell", path: "provision/scripts/print-banner.sh"
-
+  config.vm.provision "shell", path: "provision/scripts/base-system.sh"
 
 end
