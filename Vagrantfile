@@ -11,21 +11,27 @@ Vagrant.configure("2") do |config|
     vb.name = "PiscoBox-0.1.0-Dev"
   end
 
-config.vm.network "private_network", ip: "192.168.56.100"
+  config.vm.network "private_network", ip: "192.168.56.100"
 
-# ============================================================================
-# FOLDER SYNCHRONIZATION
-# ============================================================================
-config.vm.synced_folder "./public_html", "/var/www/html",
-  owner: "www-data", group: "www-data",
-  mount_options: ["dmode=755", "fmode=644"]
+  # ============================================================================
+  # FOLDER SYNCHRONIZATION
+  # ============================================================================
+  config.vm.synced_folder "./public_html", "/var/www/html",
+    owner: "www-data", group: "www-data",
+    mount_options: ["dmode=755", "fmode=644"]
 
-config.vm.synced_folder "./extra_data", "/var/extra_data",
-  owner: "www-data", group: "www-data",
-  mount_options: ["dmode=770", "fmode=660"],
-  create: true
+  config.vm.synced_folder "./extra_data", "/var/extra_data",
+    owner: "www-data", group: "www-data",
+    mount_options: ["dmode=770", "fmode=660"],
+    create: true
 
-config.vm.synced_folder "./provision/files", "/var/provision/files",
-  create: true
+  config.vm.synced_folder "./provision/files", "/var/provision/files",
+    create: true
+
+  # ============================================================================
+  # MODULAR PROVISIONING
+  # ============================================================================
+  config.vm.provision "shell", path: "provision/scripts/print-banner.sh"
+
 
 end
