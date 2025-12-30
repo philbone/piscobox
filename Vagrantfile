@@ -11,7 +11,8 @@ Vagrant.configure("2") do |config|
     vb.name = "PiscoBox-0.1.0-Dev"
   end
 
-  config.vm.network "private_network", ip: "192.168.56.100"
+  config.vm.network "private_network", ip: "192.168.56.110"
+  config.vm.network "forwarded_port", guest: 80, host: 8080
 
   # ============================================================================
   # FOLDER SYNCHRONIZATION
@@ -33,5 +34,6 @@ Vagrant.configure("2") do |config|
   # ============================================================================
   config.vm.provision "shell", path: "provision/scripts/print-banner.sh"
   config.vm.provision "shell", path: "provision/scripts/base-system.sh"
+  config.vm.provision "shell", path: "provision/scripts/apache.sh"
 
 end
