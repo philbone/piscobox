@@ -92,6 +92,15 @@ else
     print_error "Error trying to enable public_html.conf"
     exit 1
 fi
+
+a2enmod rewrite headers expires include
+if [ $? -eq 0 ]; then
+    print_success "Activated modules: rewrite, headers, expires and include"
+else
+    print_error "Error activating additional modules"
+fi
+search_apache_mods_enabled 
+echo ""
 print_success "✅ Apache configured"
 echo ""
 
