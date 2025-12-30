@@ -146,6 +146,28 @@ run_apt_command() {
 }
 
 # ============================================
+# APACHE MODS
+# ============================================
+
+# Search for enabled modules
+search_apache_mods_enabled() {
+    
+    #ls /etc/apache2/mods-enabled/ | grep -E "(rewrite|headers|expires|include|ipblock)\.load"
+
+    # Or to see both, enabled and available
+    for modulo in rewrite headers expires include proxy nomy; do
+        echo -n "Module $modulo: "
+        if [ -f /etc/apache2/mods-enabled/${modulo}.load ]; then
+            print_success "ACTIVATED"
+        elif [ -f /etc/apache2/mods-available/${modulo}.load ]; then
+            print_warning "AVAILABLE (but not activated)"
+        else
+            print_error "NOT INSTALLED"
+        fi
+    done
+}
+
+# ============================================
 # CLEANUP FUNCTIONS
 # ============================================
 
