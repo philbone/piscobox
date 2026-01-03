@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pisco Box - Entorno de Desarrollo LAMP</title>
-     <!-- Standard favicon link -->
+    <title>Pisco Box - LAMP Development Environment</title>
+    <!-- Standard favicon link -->
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <!-- Optional: for better compatibility with different devices -->
     <link rel="icon" type="image/png" href="/favicon.png" sizes="32x32">
@@ -273,64 +273,64 @@
     <div class="container">
         <header class="header">
             <h1 class="logo">· PISCO BOX ·</h1>
-            <p class="tagline">Entorno de desarrollo LAMP basado en Debian Bullseye con Apache, PHP 8.3 y MariaDB</p>
-            <span class="version">Versión Actual: 0.1.0</span>
+            <p class="tagline">LAMP development environment based on Debian Bullseye with Apache, PHP 8.3 and MariaDB</p>
+            <span class="version">Current Version: 0.1.0</span>
         </header>
 
         <div class="content">
             <div class="card">
-                <h2 class="card-title"><i class="fas fa-rocket"></i> Comenzar</h2>
-                <p>Para iniciar tu entorno de desarrollo con Pisco Box:</p>
+                <h2 class="card-title"><i class="fas fa-rocket"></i> Getting Started</h2>
+                <p>To start your development environment with Pisco Box:</p>
                 
                 <div class="code-block">
                     <span class="prompt">$</span> <span class="command">vagrant up</span>
                 </div>
                 
-                <p>Con la máquina virtual funcionando podrás hacer login:</p>
+                <p>With the virtual machine running, you can log in:</p>
                 
                 <div class="code-block">
                     <span class="prompt">$</span> <span class="command">vagrant ssh</span>
                 </div>
                 
                 <div class="info-box">
-                    <strong>Nota:</strong> Asegúrate de tener instalado Vagrant y VirtualBox/Parallels/VMware <a href="https://www.google.com/search?q=como+instalar+un+entorno+vagrant+%2B+virtualbox" target="_blank">antes de comenzar.</a>
+                    <strong>Note:</strong> Make sure you have Vagrant and VirtualBox/Parallels/VMware installed <a href="https://www.google.com/search?q=how+to+install+vagrant+environment+%2B+virtualbox" target="_blank">before starting.</a>
                 </div>
                 
-                <h3 class="card-title" style="font-size: 1.2rem; margin-top: 25px;"><i class="fas fa-globe"></i> Acceso Web</h3>
-                <p>El sitio por defecto estará disponible en:</p>
+                <h3 class="card-title" style="font-size: 1.2rem; margin-top: 25px;"><i class="fas fa-globe"></i> Web Access</h3>
+                <p>The default site will be available at:</p>
                 <div class="code-block">
-                    <span class="comment"># URL principal</span><br>
+                    <span class="comment"># Main URL</span><br>
                     <span class="command"> <a href="http://localhost:8080">http://localhost:8080</a></span><br><br>
-                    <span class="comment"># Si configuraste un nombre de host local</span><br>
+                    <span class="comment"># If you configured a local hostname</span><br>
                     <span class="command"> <a href="http://piscobox.test">http://piscobox.test</a></span>
                 </div>
 
                 <div class="info-box">
-                    <strong>¿Cómo configurar un nombre de host local?</strong> sigue estas instrucciones para crear un nombre de host en tu computadora local: <a href="#edit-hosts">editando el fichero /etc/hosts</a>
+                    <strong>How to configure a local hostname?</strong> follow these instructions to create a hostname on your local computer: <a href="#edit-hosts">by editing the /etc/hosts file</a>
                 </div>
 
             </div>
 
             <div class="card">
-                <h2 class="card-title"><i class="fas fa-database"></i> Credenciales MySQL/MariaDB</h2>
+                <h2 class="card-title"><i class="fas fa-database"></i> MySQL/MariaDB Credentials</h2>
                 <div class="success-box">
-                    <p><strong>Usuario:</strong> <span class="highlight">piscoboxuser</span></p>
-                    <p><strong>Contraseña:</strong> <span class="highlight">DevPassword123</span></p>
+                    <p><strong>User:</strong> <span class="highlight">piscoboxuser</span></p>
+                    <p><strong>Password:</strong> <span class="highlight">DevPassword123</span></p>
                     <p><strong>Host:</strong> <span class="highlight">localhost</span></p>
                 </div>
                 
-                <p>Para conectarte a MariaDB desde la línea de comandos:</p>
+                <p>To connect to MariaDB from the command line:</p>
                 <div class="code-block">
-                    <span class="comment"># Como usuario root</span><br>
+                    <span class="comment"># As root user</span><br>
                     <span class="prompt">$</span> <span class="command">sudo mysql</span><br>
-                    <span class="comment"># O lo que es igual</span><br>
+                    <span class="comment"># Or the equivalent</span><br>
                     <span class="prompt">$</span> <span class="command">sudo mariadb</span><br><br>
-                    <span class="comment"># Como usuario de base de datos desde línea de comandos:</span><br>
+                    <span class="comment"># As database user from command line:</span><br>
                     <span class="prompt">$</span> <span class="command">mariadb -u piscoboxuser -p</span><br>
-                    <span class="comment"># Cuando te lo pida, ingresa la contraseña: root</span>
+                    <span class="comment"># When prompted, enter the password: DevPassword123</span>
                 </div>
                 
-                <p>O desde tu aplicación PHP:</p>
+                <p>Or from your PHP application:</p>
                 <div class="code-block">
                     <span class="php">
                         $mysqli = new mysqli("localhost", "piscoboxuser", "DevPassword123", "piscoboxdb");
@@ -339,69 +339,69 @@
             </div>
 
             <div class="card">
-                <h2 class="card-title"><i class="fas fa-star"></i> Características Principales</h2>
+                <h2 class="card-title"><i class="fas fa-star"></i> Main Features</h2>
                 <ul class="feature-list">
-                    <li><strong>Sistema Operativo:</strong> Debian Bullseye 64-bit</li>
-                    <li><strong>Herramientas:</strong> wget, curl, gnupg, lsb-release, ca-certificates, net-tools, git, vim</li>
-                    <li><strong>Zona Horaria:</strong> UTC</li>
-                    <li><strong>Configuración Regional:</strong> UTF-8</li>
-                    <li><strong>Servidor Web:</strong> Apache 2 con módulos: proxy_fcgi, setenvif, rewrite</li>
-                    <li><strong>Directorio Web:</strong> Configurado y listo para usar</li>
-                    <li><strong>PHP:</strong> 8.3 con PHP-FPM</li>
-                    <li><strong>Extensiones PHP:</strong> bcmath, bz2, cgi, gd, imap, intl, mbstring, pspell, tidy, xmlrpc, zip</li>
-                    <li><strong>Composer:</strong> Versión 2.x</li>
-                    <li><strong>Base de Datos:</strong> MariaDB Server & Client</li>
+                    <li><strong>Operating System:</strong> Debian Bullseye 64-bit</li>
+                    <li><strong>Tools:</strong> wget, curl, gnupg, lsb-release, ca-certificates, net-tools, git, vim</li>
+                    <li><strong>Time Zone:</strong> UTC</li>
+                    <li><strong>Locale Configuration:</strong> UTF-8</li>
+                    <li><strong>Web Server:</strong> Apache 2 with modules: proxy_fcgi, setenvif, rewrite</li>
+                    <li><strong>Web Directory:</strong> Configured and ready to use</li>
+                    <li><strong>PHP:</strong> 8.3 with PHP-FPM</li>
+                    <li><strong>PHP Extensions:</strong> bcmath, bz2, cgi, gd, imap, intl, mbstring, pspell, tidy, xmlrpc, zip</li>
+                    <li><strong>Composer:</strong> Version 2.x</li>
+                    <li><strong>Database:</strong> MariaDB Server & Client</li>
                 </ul>
             </div>
 
             <div class="card">
-                <h2 class="card-title"><i class="fas fa-cogs"></i> Estructura del Proyecto</h2>
-                <p>Así se ve la estructura de directorios en tu máquina local:</p>                
+                <h2 class="card-title"><i class="fas fa-cogs"></i> Project Structure</h2>
+                <p>This is what the directory structure looks like on your local machine:</p>                
                 <div class="code-block">
-                    <span class="comment"># Directorio de tu proyecto (máquina local)</span><br>
-                    <span class="command">/ruta/a/tu/piscobox   </span><br>
-                    <span class="command">   ├── doc/           </span><span class="comment"># Documentación y colaboración</span><br>
-                    <span class="command">   ├── extra_data/    </span><span class="comment"># Datos extras, backups</span><br>
-                    <span class="command">   ├── provision/     </span><span class="comment"># Scripts de aprovisionamiento</span><br>
-                    <span class="command" style="color:var(--secondary);">   ├── public_html/   </span><span class="comment"># Document root accesible en web</span><br>
-                    <span class="command">   ├── utils/         </span><span class="comment"># Plantillas de flujo de trabajo y otros</span><br>
-                    <span class="command">   ├── LICENSE        </span><span class="comment"># Licencia de Software</span><br>
-                    <span class="command">   ├── README.md      </span><span class="comment"># Bienvenida, instrucciones básicas</span><br>
-                    <span class="command">   ├── Vagrantfile    </span><span class="comment"># Configuración de Pisco Box</span><br>
-                    <span class="command">   └── ...            </span><span class="comment"># Otros archivos de tu proyecto</span><br><br>
+                    <span class="comment"># Your project directory (local machine)</span><br>
+                    <span class="command">/path/to/your/piscobox   </span><br>
+                    <span class="command">   ├── doc/           </span><span class="comment"># Documentation and collaboration</span><br>
+                    <span class="command">   ├── extra_data/    </span><span class="comment"># Extra data, backups</span><br>
+                    <span class="command">   ├── provision/     </span><span class="comment"># Provisioning scripts</span><br>
+                    <span class="command" style="color:var(--secondary);">   ├── public_html/   </span><span class="comment"># Document root accessible via web</span><br>
+                    <span class="command">   ├── utils/         </span><span class="comment"># Workflow templates and others</span><br>
+                    <span class="command">   ├── LICENSE        </span><span class="comment"># Software License</span><br>
+                    <span class="command">   ├── README.md      </span><span class="comment"># Welcome, basic instructions</span><br>
+                    <span class="command">   ├── Vagrantfile    </span><span class="comment"># Pisco Box configuration</span><br>
+                    <span class="command">   └── ...            </span><span class="comment"># Other project files</span><br><br>
                     
-                    <span class="comment"># Directorio sincronizado en la VM</span><br>
-                    <span class="command">/var/www/html</span> <span class="comment">← Sincronizado con public_html/</span>
+                    <span class="comment"># Synchronized directory in the VM</span><br>
+                    <span class="command">/var/www/html</span> <span class="comment">← Synchronized with public_html/</span>
                 </div>
                 
                 <div class="info-box">
-                    <strong>Importante:</strong> Algunos directorios como <code>public_html/</code> y <code>provision/files/</code> se sincronizan con la máquina virtual. Lo que significa que los cambios que realices en los archivos de tu máquina local se reflejarán inmediatamente en la máquina virtual.
+                    <strong>Important:</strong> Some directories like <code>public_html/</code> and <code>provision/files/</code> are synchronized with the virtual machine. This means that changes you make to files on your local machine will be immediately reflected in the virtual machine.
                 </div>
                 
-                <h3 class="card-title" style="font-size: 1.2rem; margin-top: 25px;"><i class="fas fa-terminal"></i> Comandos Útiles</h3>
+                <h3 class="card-title" style="font-size: 1.2rem; margin-top: 25px;"><i class="fas fa-terminal"></i> Useful Commands</h3>
                 <div class="code-block">
-                    <span class="comment"># Reiniciar Apache</span><br>
+                    <span class="comment"># Restart Apache</span><br>
                     <span class="prompt">$</span> <span class="command">sudo systemctl restart apache2</span><br><br>
                     
-                    <span class="comment"># Reiniciar PHP-FPM</span><br>
+                    <span class="comment"># Restart PHP-FPM</span><br>
                     <span class="prompt">$</span> <span class="command">sudo systemctl restart php8.3-fpm</span><br><br>
                     
-                    <span class="comment"># Ver logs de Apache</span><br>
+                    <span class="comment"># View Apache logs</span><br>
                     <span class="prompt">$</span> <span class="command">sudo tail -f /var/log/apache2/error.log</span>
                 </div>
             </div>
         </div>
 
         <div class="footer">
-            <p>Pisco Box es un proyecto open source mantenido por la comunidad.</p>
-            <p>¿Encontraste un problema o tienes una sugerencia? ¡Contribuye al proyecto!</p>
+            <p>Pisco Box is an open source project maintained by the community.</p>
+            <p>Found an issue or have a suggestion? Contribute to the project!</p>
             
             <a href="https://github.com/philbone/piscobox" target="_blank" class="repo-link">
-                <i class="fab fa-github"></i> Ver Repositorio en GitHub
+                <i class="fab fa-github"></i> View Repository on GitHub
             </a>
             
             <p style="margin-top: 20px;">
-                <small>Hecho con <i class="fas fa-heart" style="color: #e74c3c;"></i> para la comunidad de desarrolladores</small>
+                <small>Made with <i class="fas fa-heart" style="color: #e74c3c;"></i> for the developer community</small>
             </p>
         </div>
     </div>
