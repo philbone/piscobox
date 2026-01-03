@@ -225,5 +225,5 @@ print_error() {
 # Print warning message
 # Usage: print_warning "Potential issue"
 print_warning() {
-    echo -e "${WARNING_COLOR}⚠️  $1${NC}"
+    echo -e "${WARNING_COLOR}⚠ $1${NC}"
 }

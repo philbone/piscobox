@@ -23,7 +23,7 @@ run_apt_command "apt-get update"
 
 if [ $? -eq 0 ]; then
     print_step 2 4 "Upgrading system"
-    #run_apt_command "apt-get upgrade -y"
+    run_apt_command "apt-get upgrade -y"
     print_success "System updated successfully"
 else    
     print_error "Cannot proceed with system update"
