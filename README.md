@@ -8,13 +8,13 @@
 [![MariaDB](https://img.shields.io/badge/MariaDB-latest-A26D37.svg)](https://mariadb.com/docs/release-notes)
 [![Composer 2.x](https://img.shields.io/badge/Composer-2.x-89552D.svg)](https://getcomposer.org)
 
-**A modern LAMP stack for web developers based on Debian Bullseye**
+**A modern LAMP stack for web developers based on Debian Bookworm**
 
 PiscoBox is a ready-to-use Vagrant box built on Debian, providing a complete LAMP development environment with Apache, PHP 8.3, MariaDB, and essential tools for modern web development.
 
 ## ✨ Features
 
-- **Operating System**: Debian Bullseye 64-bit
+- **Operating System**: Debian Bookworm 64-bit
 - **Web Server**: Apache 2.4 with PHP-FPM integration
 - **PHP**: Version 8.3 with essential extensions
 - **Database**: MariaDB Server & Client

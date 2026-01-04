@@ -2,7 +2,8 @@ Vagrant.configure("2") do |config|
   # ============================================================================
   # BASE CONFIGURATION
   # ============================================================================
-  config.vm.box = "debian/bullseye64"
+  # config.vm.box = "debian/bullseye64"
+  config.vm.box = "debian/bookworm64"
   config.vm.hostname = "piscobox"
   
   config.vm.provider "virtualbox" do |vb|

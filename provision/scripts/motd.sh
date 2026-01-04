@@ -22,8 +22,10 @@ print_step 1 2 "Configuring custom MOTD..."
 rm -f /etc/motd
 rm -f /etc/update-motd.d/*
 
+distro=$(lsb_release -ds 2>/dev/null || echo "Distro not detected")
+
 # Create custom MOTD
-cat > /etc/motd <<'EOF'
+cat > /etc/motd <<EOF
                                                                                    
      ███████████   ███                            ███████████                      
     ▒▒███▒▒▒▒▒███ ▒▒▒                            ▒▒███▒▒▒▒▒███                     
@@ -34,8 +36,9 @@ cat > /etc/motd <<'EOF'
      █████        █████ ██████ ▒▒██████ ▒▒██████  ███████████ ▒▒██████  █████ █████
     ▒▒▒▒▒        ▒▒▒▒▒ ▒▒▒▒▒▒   ▒▒▒▒▒▒   ▒▒▒▒▒▒  ▒▒▒▒▒▒▒▒▒▒▒   ▒▒▒▒▒▒  ▒▒▒▒▒ ▒▒▒▒▒ 
                                                                                    
-                                          v0.1.0                   
-        
+                                          v0.1.0
+                                $distro
+                                
     • Web Access:           http://192.168.56.110
     • From host:            http://localhost:8080    
     • SSH:                  vagrant ssh
