@@ -134,3 +134,6 @@ php -m | grep -c "modules" || true
 print_success "✅ PHP 8.3 ready with all required modules and Composer"
 print_success "📦 Installed modules: bcmath, bz2, cgi, gd, imap, intl, mbstring, pspell, tidy, xmlrpc, zip"
 print_success "🎯 Composer 2.x installed globally"
+systemctl restart apache2
+sleep 5
+echo ""

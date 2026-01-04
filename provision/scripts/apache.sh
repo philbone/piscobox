@@ -51,6 +51,11 @@ cat > /etc/apache2/sites-available/public_html.conf <<'EOF'
     ServerName piscobox-dev.local
     DocumentRoot /var/www/html/
     
+    # PHP-FPM CONFIGURATION - REQUIRED FOR PHP PROCESSING
+    <FilesMatch \.php$>
+        SetHandler "proxy:unix:/run/php/php-fpm.sock|fcgi://localhost"
+    </FilesMatch>
+    
     <Directory /var/www/html>
         Options -Indexes +FollowSymLinks
         AllowOverride All
@@ -146,6 +151,7 @@ echo ""
 
 print_step 8 9 "Restarting Apache..."
 systemctl restart apache2
+
 if [ $? -eq 0 ]; then
     print_success "Apache restarted"
 else
