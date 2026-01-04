@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ============================================
-# BASE SYSTEM CONFIGURATION FOR VAGRANT
+# APACHE 2 INSTALLATION
 # ============================================
 
 # Load utilities
