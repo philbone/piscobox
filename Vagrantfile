@@ -37,5 +37,6 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", path: "provision/scripts/apache.sh"
   config.vm.provision "shell", path: "provision/scripts/php.sh"
   config.vm.provision "shell", path: "provision/scripts/database.sh"
+  config.vm.provision "shell", path: "provision/scripts/motd.sh"
 
 end
