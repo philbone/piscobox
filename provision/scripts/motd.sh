@@ -52,11 +52,11 @@ cat > /etc/motd <<EOF
     
     • PHP available:
       - PHP 8.3
-      - PHP info    :       http://192.168.56.110/phpinfo.php  
+      - PHP info    :       http://192.168.56.110/info.php  
     
     Quick commands:
       sudo systemctl restart apache2    # Restart Apache
-      sudo tail -f /var/log/apache2/whmcs-error.log
+      sudo tail -f /var/log/apache2/piscobox-error.log
       sudo mysql
     
 EOF
