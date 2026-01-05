@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ============================================
-# BASE SYSTEM CONFIGURATION FOR VAGRANT
+# APACHE 2 INSTALLATION
 # ============================================
 
 # Load utilities
@@ -13,7 +13,7 @@ init_timer
 setup_error_handling
 
 # Display header
-print_header "BASE SYSTEM AND REPOSITORIES"
+print_header "APACHE 2 INSTALLATION"
 echo "Start at: $SCRIPT_START_TIME"
 echo ""
 
@@ -50,6 +50,11 @@ cat > /etc/apache2/sites-available/public_html.conf <<'EOF'
 <VirtualHost *:80>
     ServerName piscobox-dev.local
     DocumentRoot /var/www/html/
+    
+    # PHP-FPM CONFIGURATION - REQUIRED FOR PHP PROCESSING
+    <FilesMatch \.php$>
+        SetHandler "proxy:unix:/run/php/php-fpm.sock|fcgi://localhost"
+    </FilesMatch>
     
     <Directory /var/www/html>
         Options -Indexes +FollowSymLinks
@@ -101,7 +106,7 @@ else
 fi
 search_apache_mods_enabled 
 echo ""
-print_success "✅ Apache configured"
+print_success " Apache configured"
 echo ""
 
 # Configure permissions
@@ -141,11 +146,12 @@ else
     print_error "Error assigning owner /var/www/html"
     exit 1
 fi
-print_success "✅ Configured directories"
+print_success " Configured directories"
 echo ""
 
 print_step 8 9 "Restarting Apache..."
 systemctl restart apache2
+
 if [ $? -eq 0 ]; then
     print_success "Apache restarted"
 else
@@ -157,9 +163,9 @@ print_step 9 9 "Verifying services..."
 sleep 2
 
 if systemctl is-active --quiet apache2; then
-    print_success "✅ Apache active"
+    print_success " Apache active"
 else
-    print_error "❌ Apache inactive"
+    print_error " Apache inactive"
 fi
 
-print_success "✅ Services restarted"
+print_success " Services restarted"

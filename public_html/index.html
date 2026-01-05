@@ -1,368 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pisco Box - LAMP Development Environment</title>
+    <!-- Standard favicon link -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <!-- Optional: for better compatibility with different devices -->
+    <link rel="icon" type="image/png" href="/favicon.png" sizes="32x32">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #8B4513;
+            --primary-light: #a55b2c;
+            --secondary: #f4e4d4;
+            --accent: #d4a76a;
+            --dark: #333333;
+            --light: #f8f8f8;
+            --success: #4CAF50;
+            --info: #2196F3;
+            --warning: #ff9800;
+            --danger: #f44336;
+        }
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>Apache2 Debian Default Page: It works</title>
-    <style type="text/css" media="screen">
-  * {
-    margin: 0px 0px 0px 0px;
-    padding: 0px 0px 0px 0px;
-  }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-  body, html {
-    padding: 3px 3px 3px 3px;
+        body {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            background-image: linear-gradient(to bottom, var(--secondary) 1%, var(--light) 100px);
+            min-height: 100vh;
+        }
 
-    background-color: #D8DBE2;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-    font-family: Verdana, sans-serif;
-    font-size: 11pt;
-    text-align: center;
-  }
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            /*background-color: var(--primary);*/
+            background-color: white;
+            color: var(--primary);
+            border-radius: 10px;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
 
-  div.main_page {
-    position: relative;
-    display: table;
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(to right, var(--accent), var(--primary-light));
+        }
 
-    width: 800px;
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
 
-    margin-bottom: 3px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0px 0px 0px 0px;
+        .tagline {
+            font-size: 1.2rem;
+            font-weight: 350;
+            opacity: 0.9;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
 
-    border-width: 2px;
-    border-color: #212738;
-    border-style: solid;
+        .version {
+            display: inline-block;
+            background-color: var(--primary);
+            color: var(--secondary);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 10px;
+        }
 
-    background-color: #FFFFFF;
+        /* Main Content */
+        .content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
 
-    text-align: center;
-  }
+        @media (min-width: 992px) {
+            .content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
 
-  div.page_header {
-    height: 99px;
-    width: 100%;
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-top: 4px solid var(--primary);
+            transition: transform 0.3s ease;
+        }
 
-    background-color: #F5F6F7;
-  }
+        .card:hover {
+            transform: translateY(-5px);
+        }
 
-  div.page_header span {
-    margin: 15px 0px 0px 50px;
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--secondary);
+            display: flex;
+            align-items: center;
+        }
 
-    font-size: 180%;
-    font-weight: bold;
-  }
+        .card-title i {
+            margin-right: 10px;
+        }
 
-  div.page_header img {
-    margin: 3px 0px 0px 40px;
+        .feature-list {
+            list-style-type: none;
+        }
 
-    border: 0px 0px 0px;
-  }
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+        }
 
-  div.table_of_contents {
-    clear: left;
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
 
-    min-width: 200px;
+        .feature-list li::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+            margin-right: 10px;
+        }
 
-    margin: 3px 3px 3px 3px;
+        .highlight {
+            background-color: var(--secondary);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Source Code Pro', monospace;
+            font-weight: 500;
+        }
 
-    background-color: #FFFFFF;
+        /* Code Blocks */
+        .code-block {
+            background-color: #2d2d2d;
+            color: #f8f8f8;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Source Code Pro', monospace;
+            font-size: 0.95rem;
+            margin: 15px 0;
+            overflow-x: auto;
+            line-height: 1.5;
+        }
 
-    text-align: left;
-  }
+        .code-block .prompt {
+            color: var(--accent);
+            user-select: none;
+        }
 
-  div.table_of_contents_item {
-    clear: left;
+        .code-block .command {
+            color: #fff;
+        }
 
-    width: 100%;
+        .code-block .comment {
+            color: #888;
+        }
 
-    margin: 4px 0px 0px 0px;
+        .code-block .command a{
+            color: #fff;
+            text-decoration: none;
+        }
 
-    background-color: #FFFFFF;
+        /* Info Boxes */
+        .info-box {
+            background-color: #e7f3ff;
+            border-left: 4px solid var(--info);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
 
-    color: #000000;
-    text-align: left;
-  }
+        .warning-box {
+            background-color: #fff8e1;
+            border-left: 4px solid var(--warning);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
 
-  div.table_of_contents_item a {
-    margin: 6px 0px 0px 6px;
-  }
+        .success-box {
+            background-color: #e8f5e9;
+            border-left: 4px solid var(--success);
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+        }
 
-  div.content_section {
-    margin: 3px 3px 3px 3px;
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px 0;
+            border-top: 1px solid #eee;
+            color: #777;
+            font-size: 0.9rem;
+        }
 
-    background-color: #FFFFFF;
+        .repo-link {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            margin-top: 15px;
+        }
 
-    text-align: left;
-  }
+        .repo-link:hover {
+            background-color: var(--primary-light);
+        }
 
-  div.content_section_text {
-    padding: 4px 8px 4px 8px;
+        .repo-link i {
+            margin-right: 8px;
+        }
 
-    color: #000000;
-    font-size: 100%;
-  }
-
-  div.content_section_text pre {
-    margin: 8px 0px 8px 0px;
-    padding: 8px 8px 8px 8px;
-
-    border-width: 1px;
-    border-style: dotted;
-    border-color: #000000;
-
-    background-color: #F5F6F7;
-
-    font-style: italic;
-  }
-
-  div.content_section_text p {
-    margin-bottom: 6px;
-  }
-
-  div.content_section_text ul, div.content_section_text li {
-    padding: 4px 8px 4px 16px;
-  }
-
-  div.section_header {
-    padding: 3px 6px 3px 6px;
-
-    background-color: #8E9CB2;
-
-    color: #FFFFFF;
-    font-weight: bold;
-    font-size: 112%;
-    text-align: center;
-  }
-
-  div.section_header_red {
-    background-color: #CD214F;
-  }
-
-  div.section_header_grey {
-    background-color: #9F9386;
-  }
-
-  .floating_element {
-    position: relative;
-    float: left;
-  }
-
-  div.table_of_contents_item a,
-  div.content_section_text a {
-    text-decoration: none;
-    font-weight: bold;
-  }
-
-  div.table_of_contents_item a:link,
-  div.table_of_contents_item a:visited,
-  div.table_of_contents_item a:active {
-    color: #000000;
-  }
-
-  div.table_of_contents_item a:hover {
-    background-color: #000000;
-
-    color: #FFFFFF;
-  }
-
-  div.content_section_text a:link,
-  div.content_section_text a:visited,
-   div.content_section_text a:active {
-    background-color: #DCDFE6;
-
-    color: #000000;
-  }
-
-  div.content_section_text a:hover {
-    background-color: #000000;
-
-    color: #DCDFE6;
-  }
-
-  div.validator {
-  }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.5rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+        }
     </style>
-  </head>
-  <body>
-    <div class="main_page">
-      <div class="page_header floating_element">
-        <img src="/icons/openlogo-75.png" alt="Debian Logo" class="floating_element"/>
-        <span class="floating_element">
-          Apache2 Debian Default Page
-        </span>
-      </div>
-<!--      <div class="table_of_contents floating_element">
-        <div class="section_header section_header_grey">
-          TABLE OF CONTENTS
-        </div>
-        <div class="table_of_contents_item floating_element">
-          <a href="#about">About</a>
-        </div>
-        <div class="table_of_contents_item floating_element">
-          <a href="#changes">Changes</a>
-        </div>
-        <div class="table_of_contents_item floating_element">
-          <a href="#scope">Scope</a>
-        </div>
-        <div class="table_of_contents_item floating_element">
-          <a href="#files">Config files</a>
-        </div>
-      </div>
--->
-      <div class="content_section floating_element">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="logo">· PISCO BOX ·</h1>
+            <p class="tagline">LAMP development environment based on Debian Bookworm with Apache, PHP 8.3 and MariaDB</p>
+            <span class="version">Current Version: 0.1.0</span>
+        </header>
 
+        <div class="content">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-rocket"></i> Getting Started</h2>
+                <p>To start your development environment with Pisco Box:</p>
+                
+                <div class="code-block">
+                    <span class="prompt">$</span> <span class="command">vagrant up</span>
+                </div>
+                
+                <p>With the virtual machine running, you can log in:</p>
+                
+                <div class="code-block">
+                    <span class="prompt">$</span> <span class="command">vagrant ssh</span>
+                </div>
+                
+                <div class="info-box">
+                    <strong>Note:</strong> Make sure you have Vagrant and VirtualBox/Parallels/VMware installed <a href="https://www.google.com/search?q=how+to+install+vagrant+environment+%2B+virtualbox" target="_blank">before starting.</a>
+                </div>
+                
+                <h3 class="card-title" style="font-size: 1.2rem; margin-top: 25px;"><i class="fas fa-globe"></i> Web Access</h3>
+                <p>The default site will be available at:</p>
+                <div class="code-block">
+                    <span class="comment"># Main URL</span><br>
+                    <span class="command"> <a href="http://localhost:8080">http://localhost:8080</a></span><br><br>
+                    <span class="comment"># If you configured a local hostname</span><br>
+                    <span class="command"> <a href="http://piscobox.test">http://piscobox.test</a></span>
+                </div>
 
-        <div class="section_header section_header_red">
-          <div id="about"></div>
-          It works!
-        </div>
-        <div class="content_section_text">
-          <p>
-                This is the default welcome page used to test the correct 
-                operation of the Apache2 server after installation on Debian systems.
-                If you can read this page, it means that the Apache HTTP server installed at
-                this site is working properly. You should <b>replace this file</b> (located at
-                <tt>/var/www/html/index.html</tt>) before continuing to operate your HTTP server.
-          </p>
+                <div class="info-box">
+                    <strong>How to configure a local hostname?</strong> follow these instructions to create a hostname on your local computer: <a href="#edit-hosts">by editing the /etc/hosts file</a>
+                </div>
 
+            </div>
 
-          <p>
-                If you are a normal user of this web site and don't know what this page is
-                about, this probably means that the site is currently unavailable due to
-                maintenance.
-                If the problem persists, please contact the site's administrator.
-          </p>
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-database"></i> MySQL/MariaDB Credentials</h2>
+                <div class="success-box">
+                    <p><strong>User:</strong> <span class="highlight">piscoboxuser</span></p>
+                    <p><strong>Password:</strong> <span class="highlight">DevPassword123</span></p>
+                    <p><strong>Host:</strong> <span class="highlight">localhost</span></p>
+                </div>
+                
+                <p>To connect to MariaDB from the command line:</p>
+                <div class="code-block">
+                    <span class="comment"># As root user</span><br>
+                    <span class="prompt">$</span> <span class="command">sudo mysql</span><br>
+                    <span class="comment"># Or the equivalent</span><br>
+                    <span class="prompt">$</span> <span class="command">sudo mariadb</span><br><br>
+                    <span class="comment"># As database user from command line:</span><br>
+                    <span class="prompt">$</span> <span class="command">mariadb -u piscoboxuser -p</span><br>
+                    <span class="comment"># When prompted, enter the password: DevPassword123</span>
+                </div>
+                
+                <p>Or from your PHP application:</p>
+                <div class="code-block">
+                    <span class="php">
+                        $mysqli = new mysqli("localhost", "piscoboxuser", "DevPassword123", "piscoboxdb");
+                    </span>
+                </div>
+            </div>
 
-        </div>
-        <div class="section_header">
-          <div id="changes"></div>
-                Configuration Overview
-        </div>
-        <div class="content_section_text">
-          <p>
-                Debian's Apache2 default configuration is different from the
-                upstream default configuration, and split into several files optimized for
-                interaction with Debian tools. The configuration system is
-                <b>fully documented in
-                /usr/share/doc/apache2/README.Debian.gz</b>. Refer to this for the full
-                documentation. Documentation for the web server itself can be
-                found by accessing the <a href="/manual">manual</a> if the <tt>apache2-doc</tt>
-                package was installed on this server.
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-star"></i> Main Features</h2>
+                <ul class="feature-list">
+                    <li><strong>Operating System: </strong> Debian Bookworm 64-bit</li>
+                    <li><strong>Tools: </strong> wget, curl, gnupg, lsb-release, ca-certificates, net-tools, git, vim</li>
+                    <li><strong>Time Zone: </strong> UTC</li>
+                    <li><strong>Locale Configuration: </strong> UTF-8</li>
+                    <li><strong>Web Server: </strong> Apache 2 with modules: proxy_fcgi, setenvif, rewrite</li>
+                    <li><strong>Web Directory: </strong> Configured and ready to use</li>
+                    <li><strong>PHP: </strong> 8.3 with PHP-FPM  <a href="phpinfo.php"> details</a></li>
+                    <li><strong>PHP Extensions: </strong> bcmath, bz2, cgi, gd, imap, intl, mbstring, pspell, tidy, xmlrpc, zip</li>
+                    <li><strong>Composer: </strong> Version 2.x</li>
+                    <li><strong>Database: </strong> MariaDB Server & Client</li>
+                </ul>
+            </div>
 
-          </p>
-          <p>
-                The configuration layout for an Apache2 web server installation on Debian systems is as follows:
-          </p>
-          <pre>
-/etc/apache2/
-|-- apache2.conf
-|       `--  ports.conf
-|-- mods-enabled
-|       |-- *.load
-|       `-- *.conf
-|-- conf-enabled
-|       `-- *.conf
-|-- sites-enabled
-|       `-- *.conf
-          </pre>
-          <ul>
-                        <li>
-                           <tt>apache2.conf</tt> is the main configuration
-                           file. It puts the pieces together by including all remaining configuration
-                           files when starting up the web server.
-                        </li>
-
-                        <li>
-                           <tt>ports.conf</tt> is always included from the
-                           main configuration file. It is used to determine the listening ports for
-                           incoming connections, and this file can be customized anytime.
-                        </li>
-
-                        <li>
-                           Configuration files in the <tt>mods-enabled/</tt>,
-                           <tt>conf-enabled/</tt> and <tt>sites-enabled/</tt> directories contain
-                           particular configuration snippets which manage modules, global configuration
-                           fragments, or virtual host configurations, respectively.
-                        </li>
-
-                        <li>
-                           They are activated by symlinking available
-                           configuration files from their respective
-                           *-available/ counterparts. These should be managed
-                           by using our helpers
-                           <tt>
-                                a2enmod,
-                                a2dismod,
-                           </tt>
-                           <tt>
-                                a2ensite,
-                                a2dissite,
-                            </tt>
-                                and
-                           <tt>
-                                a2enconf,
-                                a2disconf
-                           </tt>. See their respective man pages for detailed information.
-                        </li>
-
-                        <li>
-                           The binary is called apache2. Due to the use of
-                           environment variables, in the default configuration, apache2 needs to be
-                           started/stopped with <tt>/etc/init.d/apache2</tt> or <tt>apache2ctl</tt>.
-                           <b>Calling <tt>/usr/bin/apache2</tt> directly will not work</b> with the
-                           default configuration.
-                        </li>
-          </ul>
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-cogs"></i> Project Structure</h2>
+                <p>This is what the directory structure looks like on your local machine:</p>                
+                <div class="code-block">
+                    <span class="comment"># Your project directory (local machine)</span><br>
+                    <span class="command">/path/to/your/piscobox   </span><br>
+                    <span class="command">   ├── doc/           </span><span class="comment"># Documentation and collaboration</span><br>
+                    <span class="command">   ├── extra_data/    </span><span class="comment"># Extra data, backups</span><br>
+                    <span class="command">   ├── provision/     </span><span class="comment"># Provisioning scripts</span><br>
+                    <span class="command" style="color:var(--secondary);">   ├── public_html/   </span><span class="comment"># Document root accessible via web</span><br>
+                    <span class="command">   ├── utils/         </span><span class="comment"># Workflow templates and others</span><br>
+                    <span class="command">   ├── LICENSE        </span><span class="comment"># Software License</span><br>
+                    <span class="command">   ├── README.md      </span><span class="comment"># Welcome, basic instructions</span><br>
+                    <span class="command">   ├── Vagrantfile    </span><span class="comment"># Pisco Box configuration</span><br>
+                    <span class="command">   └── ...            </span><span class="comment"># Other project files</span><br><br>
+                    
+                    <span class="comment"># Synchronized directory in the VM</span><br>
+                    <span class="command">/var/www/html</span> <span class="comment">← Synchronized with public_html/</span>
+                </div>
+                
+                <div class="info-box">
+                    <strong>Important:</strong> Some directories like <code>public_html/</code> and <code>provision/files/</code> are synchronized with the virtual machine. This means that changes you make to files on your local machine will be immediately reflected in the virtual machine.
+                </div>
+                
+                <h3 class="card-title" style="font-size: 1.2rem; margin-top: 25px;"><i class="fas fa-terminal"></i> Useful Commands</h3>
+                <div class="code-block">
+                    <span class="comment"># Restart Apache</span><br>
+                    <span class="prompt">$</span> <span class="command">sudo systemctl restart apache2</span><br><br>
+                    
+                    <span class="comment"># Restart PHP-FPM</span><br>
+                    <span class="prompt">$</span> <span class="command">sudo systemctl restart php8.3-fpm</span><br><br>
+                    
+                    <span class="comment"># View Apache logs</span><br>
+                    <span class="prompt">$</span> <span class="command">sudo tail -f /var/log/apache2/error.log</span>
+                </div>
+            </div>
         </div>
 
-        <div class="section_header">
-            <div id="docroot"></div>
-                Document Roots
-        </div>
-
-        <div class="content_section_text">
-            <p>
-                By default, Debian does not allow access through the web browser to
-                <em>any</em> file apart of those located in <tt>/var/www</tt>,
-                <a href="http://httpd.apache.org/docs/2.4/mod/mod_userdir.html" rel="nofollow">public_html</a>
-                directories (when enabled) and <tt>/usr/share</tt> (for web
-                applications). If your site is using a web document root
-                located elsewhere (such as in <tt>/srv</tt>) you may need to whitelist your
-                document root directory in <tt>/etc/apache2/apache2.conf</tt>.
-            </p>
-            <p>
-                The default Debian document root is <tt>/var/www/html</tt>. You
-                can make your own virtual hosts under /var/www. This is different
-                to previous releases which provides better security out of the box.
+        <div class="footer">
+            <p>Pisco Box is an open source project maintained by the community.</p>
+            <p>Found an issue or have a suggestion? Contribute to the project!</p>
+            
+            <a href="https://github.com/philbone/piscobox" target="_blank" class="repo-link">
+                <i class="fab fa-github"></i> View Repository on GitHub
+            </a>
+            
+            <p style="margin-top: 20px;">
+                <small>Made with <i class="fas fa-heart" style="color: #e74c3c;"></i> for the developer community</small>
             </p>
         </div>
-
-        <div class="section_header">
-          <div id="bugs"></div>
-                Reporting Problems
-        </div>
-        <div class="content_section_text">
-          <p>
-                Please use the <tt>reportbug</tt> tool to report bugs in the
-                Apache2 package with Debian. However, check <a
-                href="http://bugs.debian.org/cgi-bin/pkgreport.cgi?ordering=normal;archive=0;src=apache2;repeatmerged=0"
-                rel="nofollow">existing bug reports</a> before reporting a new bug.
-          </p>
-          <p>
-                Please report bugs specific to modules (such as PHP and others)
-                to respective packages, not to the web server itself.
-          </p>
-        </div>
-
-
-
-
-      </div>
     </div>
-    <div class="validator">
-    </div>
-  </body>
+</body>
 </html>
-
