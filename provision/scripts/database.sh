@@ -36,6 +36,7 @@ if [ $? -eq 0 ]; then
 else
     print_error "Error initializing MariaDB"
 fi
+echo ""
 
 # Create database
 print_step 3 5 "Creating a PiscoBox database..."
@@ -45,6 +46,7 @@ if [ $? -eq 0 ]; then
 else
     print_error "Error creating the piscoboxdb database"
 fi
+echo ""
 
 # Create user
 print_step 4 5 "Creating a PiscoBox user..."
@@ -54,6 +56,7 @@ if [ $? -eq 0 ]; then
 else
     print_error "Error creating database user"
 fi
+echo ""
 
 # Granting privileges
 mysql -e "GRANT ALL PRIVILEGES ON piscoboxdb.* TO 'piscoboxuser'@'localhost';" 2>/dev/null || true
@@ -62,6 +65,7 @@ if [ $? -eq 0 ]; then
 else
     print_error "Error granting permissions to user piscoboxuser"
 fi
+echo ""
 
 # Reload the changes
 mysql -e "FLUSH PRIVILEGES;" 2>/dev/null || true
@@ -70,6 +74,7 @@ if [ $? -eq 0 ]; then
 else
     print_error "Error when trying to apply the changes"
 fi
+echo ""
 
 # Import backup if it exists
 print_step 5 5 "Verifying backup for import..."
@@ -87,6 +92,16 @@ for BACKUP_PATH in "/vagrant/extra_data/backup.sql" "/vagrant/backup.sql" "/vagr
         print_warning "No database was found to import in $BACKUP_PATH"
     fi
 done
+echo ""
+
+print_step "Extra Step" "Creating Table Videogames for demo"
+mysql -u piscoboxuser -pDevPassword123 piscoboxdb < /vagrant/provision/files/create_gamevault.sql
+if [ $? -eq 0 ]; then
+    print_success "The tables for the PHP demos have been created"
+else
+    print_error "It was not possible to create the tables for the PHP demos"
+fi
+echo ""
 
 # Show version
 mysql -V
@@ -95,6 +110,7 @@ if [ $? -eq 0 ]; then
 else
     print_error "Error installing MariaDB"
 fi
+echo ""
 
 # Print Credentials
 print_header "MariaDB Credentials"
