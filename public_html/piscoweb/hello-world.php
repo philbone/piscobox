@@ -80,8 +80,8 @@
             <h3 class="card-title" style="font-size: 1.2rem; margin-top: 25px;"><i class="fas fa-globe"></i> Demos PHP/MySQL </h3>
             <p>Some PHP demo scripts:</p>
             <ul class="feature-list">
-                <li><strong>php_mysqli CRUD Table: </strong> &nbsp; <a href="#"> mysqli crud table demo </a> </li>
-                <li><strong>php_pdo CRUD Table: </strong> &nbsp; <a href="#"> pdo crud table demo </a> </li>
+                <li><strong>php_mysqli CRUD Table: </strong> &nbsp; <a target="_blank" href="demos/gamevault_mysqli.php"> mysqli crud table demo </a> </li>
+                <li><strong>php_pdo CRUD Table: </strong> &nbsp; <a target="_blank" href="demos/gamevault_pdo.php"> pdo crud table demo </a> </li>
             </ul>
 
         </div>
