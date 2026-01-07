@@ -1,0 +1,10 @@
+RewriteEngine On
+RewriteBase /
+
+# Condition for not redirecting if we are already in the subdirectory
+RewriteCond %{REQUEST_URI} !^/piscoweb/
+
+# Redirect everything else to piscoweb
+RewriteRule ^(.*)$ /piscoweb/$1 [L]
+
+# You can remove all of this before you start working; this is just to show /piscoweb as the default website.
