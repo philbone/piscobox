@@ -78,11 +78,48 @@
             </div>
 
             <h3 class="card-title" style="font-size: 1.2rem; margin-top: 25px;"><i class="fas fa-globe"></i> Demos PHP/MySQL </h3>
-            <p>Some PHP demo scripts:</p>
-            <ul class="feature-list">
-                <li><strong>php_mysqli CRUD Table: </strong> &nbsp; <a target="_blank" href="demos/gamevault_mysqli.php"> mysqli crud table demo </a> </li>
-                <li><strong>php_pdo CRUD Table: </strong> &nbsp; <a target="_blank" href="demos/gamevault_pdo.php"> pdo crud table demo </a> </li>
-            </ul>
+
+            <?php
+            $directory_path = 'demos';
+
+            if (is_dir($directory_path)) {
+                ?>
+                <p>PHP demo scripts:</p>
+                <?php
+                if ( is_file($directory_path.'/gamevault_mysqli.php') && is_file($directory_path.'/gamevault_pdo.php') ) {
+                    ?>
+                    <ul class="feature-list">
+                        <li><strong>php_mysqli CRUD Table: </strong> &nbsp; <a target="_blank" href="demos/gamevault_mysqli.php"> mysqli crud table demo </a> </li>
+                        <li><strong>php_pdo CRUD Table: </strong> &nbsp; <a target="_blank" href="demos/gamevault_pdo.php"> pdo crud table demo </a> </li>
+                    </ul>
+                    <?php
+                }else{
+                    ?>
+                    <div class="error-box"> 
+                        <strong>Oops! Looks like some files are missing 😅</strong> follow these instructions: <a href="#install-demos-php"> Installing PHP demos with PiscoBox CLI </a>
+                    </div>
+                    <?php
+                }                 
+            } else {
+                ?>
+                <div class="warning-box">
+                    <strong>Do you want to install the PHP demos?😊 </strong> follow these instructions: <a href="#install-demos-php"> Installing PHP demos with PiscoBox CLI </a>
+                </div>
+
+                <p>Easy install PHP Demos:</p>
+                <div class="code-block">                    
+                    <span class="prompt">$</span> <span class="command">piscobox install demo-php</span>
+                </div>
+
+                <div class="code-block">
+                    <span class="comment"># PiscoBox CLI Help</span><br>
+                    <span class="command"> <span class="prompt">$</span> piscobox --help </span><br><br>
+                    <span class="comment"># To access as 'piscoboxuser' data base user </span><br>
+                    <span class="command"> <span class="prompt">$</span> piscbox mysql login </span><br><br>                    
+                </div>
+                <?php
+            }
+            ?>            
 
         </div>
 

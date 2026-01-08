@@ -94,14 +94,14 @@ for BACKUP_PATH in "/vagrant/extra_data/backup.sql" "/vagrant/backup.sql" "/vagr
 done
 echo ""
 
-print_step "Extra Step" "Creating Table Videogames for demo"
-mysql -u piscoboxuser -pDevPassword123 piscoboxdb < /vagrant/provision/files/create_gamevault.sql
-if [ $? -eq 0 ]; then
-    print_success "The tables for the PHP demos have been created"
-else
-    print_error "It was not possible to create the tables for the PHP demos"
-fi
-echo ""
+# print_step "Extra Step" "Creating Table Videogames for demo"
+# mysql -u piscoboxuser -pDevPassword123 piscoboxdb < /vagrant/provision/files/create_gamevault.sql
+# if [ $? -eq 0 ]; then
+#     print_success "The tables for the PHP demos have been created"
+# else
+#     print_error "It was not possible to create the tables for the PHP demos"
+# fi
+# echo ""
 
 # Show version
 mysql -V

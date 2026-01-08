@@ -215,6 +215,14 @@ body {
     margin: 15px 0;
 }
 
+.error-box {
+    background-color: #ffe9e8;
+    border-left: 4px solid var(--danger);
+    padding: 15px;
+    border-radius: 4px;
+    margin: 15px 0;
+}
+
 /* Footer */
 .footer {
     text-align: center;

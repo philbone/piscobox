@@ -33,7 +33,7 @@ echo ""
 
 # Step 2: Install basic tools
 print_step 3 4 "Installing basic tools"
-run_apt_command "apt-get install -y wget curl gnupg lsb-release ca-certificates net-tools git vim"
+run_apt_command "apt-get install -y wget curl gnupg lsb-release ca-certificates net-tools git vim unzip"
 print_success "Basic tools installed successfully"
 echo ""
 
@@ -43,6 +43,14 @@ timedatectl set-timezone UTC
 localectl set-locale LANG=C.UTF-8
 print_success "Locale and TimeZone configured successfully"
 echo ""
+
+touch /home/vagrant/.bash_aliases
+echo "alias piscobox='/var/provision/cli/piscobox-cli.sh'" >> "/home/vagrant/.bash_aliases"
+if [ $? -eq 0 ]; then
+    echo "alias piscobox añadido a bash_aliases"
+else
+    echo "no se pudo añadir el alias piscobox a bash_aliases"
+fi
 
 # Show final success message
 show_success_message
