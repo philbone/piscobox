@@ -91,6 +91,9 @@
             if (is_dir($directory_path)) {
                 ?>
                 <p>PHP demo scripts:</p>
+                <div class="info-box">
+                    <strong>The PHP demos are installed!</strong> Click on the list to try them 
+                </div>
                 <?php
                 if ( is_file($directory_path.'/gamevault_mysqli.php') && is_file($directory_path.'/gamevault_pdo.php') ) {
                     ?>
@@ -98,6 +101,37 @@
                         <li><strong>php_mysqli CRUD Table: </strong> &nbsp; <a target="_blank" href="demos/gamevault_mysqli.php"> mysqli crud table demo </a> </li>
                         <li><strong>php_pdo CRUD Table: </strong> &nbsp; <a target="_blank" href="demos/gamevault_pdo.php"> pdo crud table demo </a> </li>
                     </ul>
+
+                    <h3 class="card-title" id="demos-php" style="font-size: 1.2rem; margin-top: 25px;">
+                        <i class="fa-solid fa-laptop-code"></i> In case you want to delete the PHP demos: 
+                    </h3>                    
+                    <div class="code-block">
+                        <span class="comment"># Log in to the virtual machine</span><br>
+                        <span class="prompt">$</span> <span class="command">vagrant ssh</span>
+                        <br><br>
+
+                        <span class="comment"># Then, run the command to uninstall the PHP demos.</span><br>
+                        <span class="comment"># This action will remove the demos/ directory and all the PHP files it contains. It will also delete the demo tables from the 'piscoboxdb' database. </span><br>                        
+                        <span class="prompt">$</span> <span class="command">piscobox uninstall demo-php</span>       
+                        <br><br>
+
+                        <span class="comment"># You will see an uninstallation notice</span><br>
+                        <span class="prompt">⚠</span> <span class="command"> PHP files in public_html/piscoweb/demos will be ERASED</span><br>
+                        <span class="prompt">⚠</span> <span class="command"> Demo tables will be DELETED from 'piscoboxdb' database</span>
+                        <br><br>
+
+                        <span class="comment"># Type 'y', 'yes', 's' or 'si' to confirm, and then press Enter key to proceed with the uninstallation</span><br>
+                        <span class="command"> Do you want to proceed with the delete process? Y/n: y</span>
+                        <br><br>
+
+                        <span class="comment">
+                            # If you prefer to cancel the uninstallation process, simply type 'n', 'no' or something else, then press the Enter key to cancel
+                        </span><br>
+                        <span class="command"> Do you want to proceed with the delete process? Y/n: n</span>
+                        <br><br>
+
+                    </div>
+
                     <?php
                 }else{
                     ?>
@@ -114,7 +148,7 @@
 
                 <p><h4 style="color: var(--primary);"> <i class="fa-solid fa-terminal"></i> Step 1: </h4> Easy installation of PHP demos with PiscoBox CLI: </p>
                 <div class="code-block">
-                    <span class="comment"># Enter the virtual machine</span><br>
+                    <span class="comment"># Log in to the virtual machine</span><br>
                     <span class="prompt">$</span> <span class="command">vagrant ssh</span>
                     <br><br>
 
