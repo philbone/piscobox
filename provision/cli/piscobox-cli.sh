@@ -69,7 +69,8 @@ install)
 
       print_step 3 3 "🗂️ Creating the destination directory and moving the files"
       sudo mkdir -p /var/www/html/piscoweb/demos/
-      sudo mv /var/tmp/demos/php/*.php /var/www/html/piscoweb/demos/     
+      sudo mv /var/tmp/demos/php/*.php /var/www/html/piscoweb/demos/
+      sudo mv /var/tmp/demos/php/demos.json /var/www/html/piscoweb/demos/
       if [ $? -eq 0 ];then        
         print_success "demos php instalados en public_html/piscoweb/demos/ 🥂"
         rm -r /var/tmp/demos/
@@ -101,6 +102,7 @@ uninstall)
 
         print_step 2 3 "Removing all PHP files from the demos directory 🗑️"
         sudo rm -rf /var/www/html/piscoweb/demos/*.php
+        sudo rm -rf /var/www/html/piscoweb/demos/demos.json
 
         if [ -z "$( ls -A '/var/www/html/piscoweb/demos/' )" ]; then        
           print_step 3 3 "Removing the empty demos directory 🗑️"
