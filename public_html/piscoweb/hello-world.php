@@ -28,7 +28,9 @@
         <div class="content">
 
             <div class="card">
-                <h2 class="card-title"><i class="fas fa-rocket"></i><?php echo $_SERVER['SERVER_SOFTWARE'] ?></h2>
+                <h2 class="card-title">
+                    <i class="fa-solid fa-feather"></i><?php echo $_SERVER['SERVER_SOFTWARE'] ?>
+                </h2>
                 <p>To know the status of Apache Web Server:</p>                
                 <div class="code-block">
                     <span class="prompt">$</span> <span class="command">sudo systemctl status apache2</span>
@@ -61,7 +63,9 @@
             </div>
 
             <div class="card">
-              <h2 class="card-title"><i class="fas fa-rocket"></i><?php echo "PHP " . phpversion() ?></h2>
+              <h2 class="card-title">
+                <i class="fa-brands fa-php"></i> <?php echo "PHP " . phpversion() ?>
+            </h2>
               <p>To know the status of PHP:</p>
               <div class="code-block">
                 <span class="prompt">$</span> <span class="command">sudo systemctl status php</span>
@@ -77,7 +81,9 @@
                 <span class="prompt">$</span> <span class="command">php -i</span>
             </div>
 
-            <h3 class="card-title" id="demos-php" style="font-size: 1.2rem; margin-top: 25px;"><i class="fas fa-globe"></i> Demos PHP/MySQL </h3>
+            <h3 class="card-title" id="demos-php" style="font-size: 1.2rem; margin-top: 25px;">
+                <i class="fa-solid fa-laptop-code"></i> Demos PHP/MySQL 
+            </h3>
 
             <?php
             $directory_path = 'demos';
