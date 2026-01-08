@@ -128,9 +128,22 @@
                             # If you prefer to cancel the uninstallation process, simply type 'n', 'no' or something else, then press the Enter key to cancel
                         </span><br>
                         <span class="command"> Do you want to proceed with the delete process? Y/n: n</span>
-                        <br><br>
-
+                        <br>
                     </div>
+
+                    <p class="comment" style="color: var(--primary);"><i class="fa-solid fa-arrows-rotate"></i> Finally, reload this page: </p>
+                    <span style="display: block; width:100%">
+                        <a href="#demos-php" onclick="location.reload()" style="display: block; width: 100%; padding: 0.2em; font-weight: 500; font-size: 1.35em; color: var(--primary); text-align: center;"> 
+                            <?php
+                            if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+                                $url = "https://";
+                            } else {
+                                $url = "http://";
+                            }
+                            echo $url . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; 
+                            ?>
+                        </a>
+                    </span>
 
                     <?php
                 }else{
