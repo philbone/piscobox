@@ -66,8 +66,8 @@
               <h2 class="card-title">
                 <i class="fa-brands fa-php"></i> <?php echo "PHP " . phpversion() ?>
             </h2>
-              <p>To know the status of PHP:</p>
-              <div class="code-block">
+            <p>To know the status of PHP:</p>
+            <div class="code-block">
                 <span class="prompt">$</span> <span class="command">sudo systemctl status php</span>
             </div>
 
@@ -87,21 +87,28 @@
 
             <?php
             $directory_path = 'demos';
+            $php_files = glob( './' . $directory_path . '/' . '*.php');            
 
-            if (is_dir($directory_path)) {
+            if (is_dir( $directory_path )) {
                 ?>
                 <p>PHP demo scripts:</p>
                 <div class="info-box">
                     <strong>The PHP demos are installed!</strong> Click on the list to try them 
                 </div>
                 <?php
-                if ( is_file($directory_path.'/gamevault_mysqli.php') && is_file($directory_path.'/gamevault_pdo.php') ) {
-                    ?>
-                    <ul class="feature-list">
-                        <li><strong>php_mysqli CRUD Table: </strong> &nbsp; <a target="_blank" href="demos/gamevault_mysqli.php"> mysqli crud table demo </a> </li>
-                        <li><strong>php_pdo CRUD Table: </strong> &nbsp; <a target="_blank" href="demos/gamevault_pdo.php"> pdo crud table demo </a> </li>
-                    </ul>
+                // Decodificar el JSON a un array asociativo
+                $demos = json_decode( file_get_contents($directory_path."/demos.json"), true );
 
+                // If there are PHP files on demo/ directory, display them
+                if ( $php_files ) {
+
+                    foreach ($demos['demos-php'] as $demo) {
+                        echo "<ul class='feature-list'>";
+                        echo '<li><a target="_blank" href='. $directory_path.'/'.$demo['name'] .'>'. $demo['name'] .'</a><span>&nbsp;' . $demo['description'] . '</span></li>';
+                        echo "</ul>";
+                    }
+
+                    ?>
                     <h3 class="card-title" id="demos-php" style="font-size: 1.2rem; margin-top: 25px;">
                         <i class="fa-solid fa-laptop-code"></i> In case you want to delete the PHP demos: 
                     </h3>                    
@@ -146,6 +153,7 @@
                     </span>
 
                     <?php
+                // If there are no PHP files, display the information in the error box
                 }else{
                     ?>
                     <div class="error-box"> 
