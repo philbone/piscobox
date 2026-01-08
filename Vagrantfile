@@ -30,6 +30,9 @@ Vagrant.configure("2") do |config|
   config.vm.synced_folder "./provision/files", "/var/provision/files",
     create: true
 
+  config.vm.synced_folder "./provision/cli", "/var/provision/cli",
+    create: true
+
   # ============================================================================
   # MODULAR PROVISIONING
   # ============================================================================
