@@ -9,7 +9,7 @@
     <link rel="icon" type="image/png" href="/favicon.png" sizes="32x32">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="piscostyle.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
 
 
@@ -77,7 +77,7 @@
                 <span class="prompt">$</span> <span class="command">php -i</span>
             </div>
 
-            <h3 class="card-title" style="font-size: 1.2rem; margin-top: 25px;"><i class="fas fa-globe"></i> Demos PHP/MySQL </h3>
+            <h3 class="card-title" id="demos-php" style="font-size: 1.2rem; margin-top: 25px;"><i class="fas fa-globe"></i> Demos PHP/MySQL </h3>
 
             <?php
             $directory_path = 'demos';
@@ -103,24 +103,35 @@
             } else {
                 ?>
                 <div class="warning-box">
-                    <strong>Do you want to install the PHP demos?😊 </strong> follow these instructions: <a href="#install-demos-php"> Installing PHP demos with PiscoBox CLI </a>
+                    <strong>Do you want to install the PHP demos? 😊 </strong> Just follow these instructions and then <a href="#demos-php" onclick="location.reload()">reload the page</a>:
                 </div>
 
-                <p>Easy install PHP Demos:</p>
-                <div class="code-block">                    
-                    <span class="prompt">$</span> <span class="command">piscobox install demo-php</span>
-                </div>
-
+                <p><h4 style="color: var(--primary);"> <i class="fa-solid fa-terminal"></i> Step 1: </h4> Easy installation of PHP demos with PiscoBox CLI: </p>
                 <div class="code-block">
-                    <span class="comment"># PiscoBox CLI Help</span><br>
-                    <span class="command"> <span class="prompt">$</span> piscobox --help </span><br><br>
-                    <span class="comment"># To access as 'piscoboxuser' data base user </span><br>
-                    <span class="command"> <span class="prompt">$</span> piscbox mysql login </span><br><br>                    
-                </div>
-                <?php
-            }
-            ?>            
+                    <span class="comment"># Enter the virtual machine</span><br>
+                    <span class="prompt">$</span> <span class="command">vagrant ssh</span>
+                    <br><br>
 
+                    <span class="comment"># Then, run the installation command</span><br>
+                    <span class="prompt">$</span> <span class="command">piscobox install demo-php</span>                    
+                </div>
+
+                <p class="comment"><h4 style="color: var(--primary);"><i class="fa-solid fa-arrows-rotate"></i> Step 2: </h4> Reload this page: </p>
+                <span style="display: block; width:100%">
+                    <a href="#demos-php" onclick="location.reload()" style="display: block; width: 100%; padding: 0.2em; font-weight: 500; font-size: 1.35em; color: var(--primary); text-align: center;"> 
+                        <?php
+                        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') {
+                            $url = "https://";
+                        } else {
+                            $url = "http://";
+                        }
+                        echo $url . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']; 
+                        ?>
+                    </a>
+                </span>
+                <?php
+            } // en else
+            ?>
         </div>
 
     </div>
