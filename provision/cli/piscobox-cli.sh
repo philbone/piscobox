@@ -19,7 +19,18 @@ setup_error_handling
 
 case "$1" in
 --help | -h | "")
-  echo "ayuda"
+  echo "PiscoBox-CLI 7 January 2026, by Philbone."
+  echo ""
+  echo "install         piscobox installation assistant"
+  echo "  demo-php      install the PHP demos"
+  echo "  demo-python   install the Python demos(soon)"  
+  echo ""
+  echo "uninstall       piscobox uninstallation assistant"
+  echo "  demo-php      uninstall the PHP demos"
+  echo "  demo-python   uninstall the Python demos(soon)"
+  echo ""
+  echo "mysql           piscobox mysql assistant"
+  echo "  login         get instant access as piscoboxuser"
   ;;
 mysql | mariadb)
   case "$2" in
