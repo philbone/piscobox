@@ -135,6 +135,7 @@
 
             </div>
 
+            <!-- PHP CARD -->
             <div class="card">
               <h2 class="card-title">
                 <i class="fa-brands fa-php"></i> <?php echo "PHP " . phpversion() ?>
@@ -154,6 +155,7 @@
                 <span class="prompt">~$</span> <span class="command">php -i</span>
             </div>
 
+            <!-- PHP/MySQL DEMOS -->
             <h3 class="card-title" id="demos-php" style="font-size: 1.2rem; margin-top: 25px;">
                 <i class="fa-solid fa-laptop-code"></i> Demos PHP/MySQL 
             </h3>
@@ -272,4 +274,80 @@
 
 </div>
 </body>
+
+<script>
+    // Detects when the demo directory is installed or uninstalled
+    const DIRECTORY = './demos/'; // Directory path to monitor
+    const INTERVAL = 5000;
+
+    let previouslyExist = null;
+    let intervalId = null;
+
+    // Start automatically
+    startMonitor();
+
+    function startMonitor() {
+        // First verification
+        verifyDirectory();
+
+        // Then, it performs checks periodically
+        intervalId = setInterval(verifyDirectory, INTERVAL);
+    }
+
+    function verifyDirectory() {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'c.php', true);
+        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                try {
+                    const data = JSON.parse(xhr.responseText);
+
+                    if (typeof data.exist !== 'undefined') {
+                        // First check
+                        if (previouslyExist === null) {
+                            previouslyExist = data.exist;
+                            show(`Monitor active. Current status: ${data.exist ? '✅ Installed' : '❌ Not installed'}`);
+                        }
+                        // State change detected
+                        else if (data.exist !== previouslyExist) {
+                            previouslyExist = data.exist;
+                            show(`⚡ CHANGE: Demos ${data.exist ? 'Installed ✅' : 'Uninstalled now ❌'}`, true);
+                            location.reload();// This should actually print the section list-demos, instead of reloading the page.
+                        }
+                    } else if (data.error) {
+                        show(`Error: ${data.error}`, false);
+                    }
+                } catch (e) {
+                    show('Server response error', false);
+                }
+            } else {
+                show('Error connecting to the server', false);
+            }
+        };
+
+        xhr.onerror = function () {
+            show('Connection error', false);
+        };
+
+        xhr.send('p=' + encodeURIComponent(DIRECTORY));
+    }
+
+    function show(message, isChange = false) {
+        const hour = new Date().toLocaleTimeString();
+
+        if (isChange) {
+            console.log("change:" + hour + " " + message);
+        } else {
+            console.log(hour + " " + message);
+        }
+    }
+
+    // Stop if needed (e.g., when closing a tab)
+    window.onbeforeunload = function () {
+        if (intervalId) clearInterval(intervalId);
+    };
+</script>
+
 </html>
