@@ -1,3 +1,4 @@
 .vagrant/
 public_html/**/demo
 public_html/**/demos
+*.piscobox-hosts
