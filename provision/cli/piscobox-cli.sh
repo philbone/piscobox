@@ -1,109 +1,74 @@
 #!/usr/bin/env bash
-# Piscobox CLI — simplified management tool for local server environment
-# Author: philbone
-# Version: 1.4.0
 
-set -euo pipefail
+# ============================================================
+#  Piscobox CLI Utility
+# ============================================================
 
+# Load utilities
 UTILS_FILE="/vagrant/provision/scripts/bash-utils.sh"
 [ -f "$UTILS_FILE" ] && source "$UTILS_FILE" || { echo "Error: Cannot load utilities"; exit 1; }
 
-CLI_NAME="Piscobox CLI"
-CLI_VERSION="1.4.0"
+# Initialize
+init_timer
+setup_error_handling
 
+COMMAND=$1
+shift || true
+
+SITES_AVAILABLE="/etc/apache2/sites-available"
+MULTIPHP_CONF="/etc/apache2/conf-enabled/piscobox-multiphp-aliases.conf"
+HOSTS_FILE="/vagrant/.piscobox-hosts"
+
+# ============================================================
+#  Function: show_help
+# ============================================================
 show_help() {
   cat <<EOF
-$CLI_NAME v$CLI_VERSION
-
-Usage: piscobox <command>
+Piscobox CLI Utility
+Usage:
+  piscobox [command] [options]
 
 Available commands:
+  site create           Create a new VirtualHost and PHP site
+  hosts-sync            Display instructions to sync /etc/hosts on your host
   help                  Show this help message
-  status                Show system service status
-  restart               Restart web and database services
-  logs                  Display last lines of Apache error log
-  info                  Show PHP and Apache info
-  site create           Create and configure a new Apache VirtualHost (multi-PHP)
 EOF
 }
 
-show_status() {
-  print_header "SYSTEM STATUS"
-  echo ""
-  systemctl --no-pager --plain --type=service | grep -E "apache2|php|mariadb|mysql" || true
-  echo ""
-}
-
-restart_services() {
-  print_header "RESTARTING SERVICES"
-  echo ""
-  print_step 1 3 "Restarting Apache..."
-  systemctl restart apache2
-  print_success "✓ Apache restarted successfully"
-  print_step 2 3 "Restarting PHP-FPM..."
-  systemctl restart php*-fpm || true
-  print_success "✓ PHP-FPM services restarted"
-  print_step 3 3 "Restarting MariaDB..."
-  systemctl restart mariadb
-  print_success "✓ MariaDB restarted"
-  echo ""
-}
-
-show_logs() {
-  print_header "APACHE ERROR LOGS"
-  echo ""
-  tail -n 40 /var/log/apache2/error.log || echo "No logs found."
-  echo ""
-}
-
-show_info() {
-  print_header "SYSTEM INFORMATION"
-  echo ""
-  echo "Hostname: $(hostname)"
-  echo "Apache: $(apache2 -v | head -n1)"
-  echo "PHP: $(php -v | head -n1)"
-  echo "MariaDB: $(mariadb --version 2>/dev/null || echo 'not installed')"
-  echo ""
-}
-
-# ------------------------------------------------------------------
-# NEW COMMAND: site create
-# ------------------------------------------------------------------
-
+# ============================================================
+#  Function: site_create
+# ============================================================
 site_create() {
-  print_header "SITE CREATION ASSISTANT"
+  echo ""
+  echo "=========================================="
+  echo "      SITE CREATION ASSISTANT"
+  echo "=========================================="
 
   read -rp "Enter site name (e.g. mysite): " SITE_NAME
-  [[ -z "$SITE_NAME" ]] && { print_error "Site name cannot be empty."; exit 1; }
-
   read -rp "Enter PHP version [8.3]: " PHP_VER
   PHP_VER=${PHP_VER:-8.3}
-
   read -rp "Enter document root [/var/www/${SITE_NAME}/public]: " DOC_ROOT
   DOC_ROOT=${DOC_ROOT:-/var/www/${SITE_NAME}/public}
 
-  local VHOST_FILE="/etc/apache2/sites-available/${SITE_NAME}.conf"
-
-  if [[ ! -S /run/php/php${PHP_VER}-fpm.sock ]]; then
-    print_error "PHP-FPM socket for version ${PHP_VER} not found: /run/php/php${PHP_VER}-fpm.sock"
-    echo "Available sockets:"
-    ls -1 /run/php/*.sock 2>/dev/null || true
-    exit 1
+  print_step 1 4 "Creating document root......"
+  if [[ ! -d "$DOC_ROOT" ]]; then
+    sudo mkdir -p "$DOC_ROOT"
+    sudo chown -R vagrant:vagrant "$(dirname "$DOC_ROOT")"
+    print_success "✓ ✓ Document root created at $DOC_ROOT"
+  else
+    print_success "✓ ✓ Document root already exists at $DOC_ROOT"
   fi
 
-  print_step 1 4 "Creating document root..."
-  sudo mkdir -p "$DOC_ROOT"
-  sudo chown -R www-data:www-data "$DOC_ROOT"
-  sudo chmod -R 755 "$DOC_ROOT"
-  print_success "✓ Document root created at $DOC_ROOT"
+  print_step 2 4 "Creating VirtualHost......"
+  CONF_PATH="${SITES_AVAILABLE}/${SITE_NAME}.conf"
 
-  print_step 2 4 "Creating VirtualHost..."
-  sudo tee "$VHOST_FILE" >/dev/null <<EOF
+  sudo tee "$CONF_PATH" >/dev/null <<EOF
 <VirtualHost *:80>
     ServerName ${SITE_NAME}.local
     DocumentRoot ${DOC_ROOT}
 
     <Directory ${DOC_ROOT}>
+        Options Indexes FollowSymLinks
         AllowOverride All
         Require all granted
     </Directory>
@@ -117,57 +82,96 @@ site_create() {
 </VirtualHost>
 EOF
 
-  print_success "✓ VirtualHost created at $VHOST_FILE"
+  print_success "✓ ✓ VirtualHost created at $CONF_PATH"
 
-  print_step 3 4 "Enabling site and reloading Apache..."
+  print_step 3 4 "Enabling site and reloading Apache......"
   sudo a2ensite "${SITE_NAME}.conf" >/dev/null
   sudo systemctl reload apache2
-  print_success "✓ Site ${SITE_NAME}.local enabled"
+  print_success "✓ ✓ Site ${SITE_NAME}.local enabled"
 
   print_step 4 4 "Creating sample index.php..."
-if [[ ! -f "${DOC_ROOT}/index.php" ]]; then
-  echo "<?php phpinfo(); ?>" | sudo tee "${DOC_ROOT}/index.php" >/dev/null
-  sudo chown www-data:www-data "${DOC_ROOT}/index.php"
-  print_success "✓ Sample index.php created"
-fi
+  if [[ ! -f "${DOC_ROOT}/index.php" ]]; then
+    echo "<?php phpinfo(); ?>" | sudo tee "${DOC_ROOT}/index.php" >/dev/null
+    sudo chown www-data:www-data "${DOC_ROOT}/index.php"
+    print_success "✓ Sample index.php created"
+  fi
+
+  # Register for subdirectory (IP) access
+  sudo tee -a "$MULTIPHP_CONF" >/dev/null <<EOF
+
+# Auto-generated for ${SITE_NAME}
+<Directory ${DOC_ROOT}>
+    <FilesMatch "\\.php$">
+        SetHandler "proxy:unix:/run/php/php${PHP_VER}-fpm.sock|fcgi://localhost/"
+    </FilesMatch>
+</Directory>
+EOF
+
+  # Add to hosts mapping file
+  echo "192.168.56.110   ${SITE_NAME}.local" | sudo tee -a "$HOSTS_FILE" >/dev/null
+
+  sudo systemctl reload apache2
 
   echo ""
-  print_success "🎉 Site '${SITE_NAME}' successfully created with PHP ${PHP_VER}"
-  print_success "Access it via http://${SITE_NAME}.local/"
+  print_success "✓ Site created successfully!"
+  echo ""
+  echo "You can access your site at:"
+  echo "  → http://${SITE_NAME}.local"
+  echo "  → or http://192.168.56.110/${SITE_NAME}/"
+  echo ""
+  echo "To sync your host's /etc/hosts, run:"
+  echo "  piscobox hosts-sync"
   echo ""
 }
 
-# ------------------------------------------------------------------
-# COMMAND DISPATCHER
-# ------------------------------------------------------------------
+# ============================================================
+#  Function: hosts_sync
+# ============================================================
+hosts_sync() {
+  echo ""
+  echo "=========================================="
+  echo "     HOSTS SYNC UTILITY"
+  echo "=========================================="
+  echo ""
 
-case "${1:-}" in
-  help|--help|-h)
-    show_help
-    ;;
-  status)
-    show_status
-    ;;
-  restart)
-    restart_services
-    ;;
-  logs)
-    show_logs
-    ;;
-  info)
-    show_info
-    ;;
+  if [[ ! -f "$HOSTS_FILE" ]]; then
+    print_error "No .piscobox-hosts file found in /vagrant"
+    echo ""
+    echo "Create a site first using:"
+    echo "  piscobox site create"
+    return
+  fi
+
+  echo "Run this command on your host machine to sync:"
+  echo ""
+  echo "  cat .piscobox-hosts | sudo tee -a /etc/hosts"
+  echo ""
+  echo "Current entries:"
+  echo "------------------------------------------"
+  cat "$HOSTS_FILE"
+  echo "------------------------------------------"
+  echo ""
+}
+
+# ============================================================
+#  Command dispatcher
+# ============================================================
+case "$COMMAND" in
   site)
-    case "${2:-}" in
-      create)
-        site_create
-        ;;
-      *)
-        print_error "Usage: piscobox site create"
-        ;;
+    SUBCMD=$1
+    case "$SUBCMD" in
+      create) site_create ;;
+      *) show_help ;;
     esac
     ;;
+  hosts-sync)
+    hosts_sync
+    ;;
+  help|--help|-h|"")
+    show_help
+    ;;
   *)
+    print_error "Unknown command: $COMMAND"
     show_help
     ;;
 esac
