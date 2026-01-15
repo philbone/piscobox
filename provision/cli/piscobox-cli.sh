@@ -60,8 +60,8 @@ site_create() {
     return 1
   fi
 
-  read -rp "Enter document root [/var/www/${SITE_NAME}/public]: " DOC_ROOT
-  DOC_ROOT=${DOC_ROOT:-/var/www/${SITE_NAME}/public}
+  read -rp "Enter document root [/var/www/html/${SITE_NAME}]: " DOC_ROOT
+  DOC_ROOT=${DOC_ROOT:-/var/www/html/${SITE_NAME}}
 
   print_step 1 4 "Creating document root..."
   if [[ ! -d "$DOC_ROOT" ]]; then
