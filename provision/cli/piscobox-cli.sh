@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ============================================================
-#  Piscobox CLI Utility
+#  Piscobox CLI Utility (Multi-PHP aware)
 # ============================================================
 
 # Load utilities
@@ -18,6 +18,7 @@ shift || true
 SITES_AVAILABLE="/etc/apache2/sites-available"
 MULTIPHP_CONF="/etc/apache2/conf-enabled/piscobox-multiphp-aliases.conf"
 HOSTS_FILE="/vagrant/.piscobox-hosts"
+APACHE_IP="192.168.56.110"
 
 # ============================================================
 #  Function: show_help
@@ -45,21 +46,33 @@ site_create() {
   echo "=========================================="
 
   read -rp "Enter site name (e.g. mysite): " SITE_NAME
+  [[ -z "$SITE_NAME" ]] && { print_error "Site name cannot be empty"; return 1; }
+
   read -rp "Enter PHP version [8.3]: " PHP_VER
   PHP_VER=${PHP_VER:-8.3}
-  read -rp "Enter document root [/var/www/${SITE_NAME}/public]: " DOC_ROOT
-  DOC_ROOT=${DOC_ROOT:-/var/www/${SITE_NAME}/public}
 
-  print_step 1 4 "Creating document root......"
+  # Verify PHP socket exists
+  PHP_SOCKET="/run/php/php${PHP_VER}-fpm.sock"
+  if [[ ! -S "$PHP_SOCKET" ]]; then
+    print_error "PHP ${PHP_VER} does not seem to be installed or its FPM service is not running."
+    echo "Available PHP sockets:"
+    ls /run/php/php*-fpm.sock 2>/dev/null || echo "No PHP-FPM sockets found!"
+    return 1
+  fi
+
+  read -rp "Enter document root [/var/www/html/${SITE_NAME}]: " DOC_ROOT
+  DOC_ROOT=${DOC_ROOT:-/var/www/html/${SITE_NAME}}
+
+  print_step 1 4 "Creating document root..."
   if [[ ! -d "$DOC_ROOT" ]]; then
     sudo mkdir -p "$DOC_ROOT"
     sudo chown -R vagrant:vagrant "$(dirname "$DOC_ROOT")"
-    print_success "✓ ✓ Document root created at $DOC_ROOT"
+    print_success "✓ Document root created at $DOC_ROOT"
   else
-    print_success "✓ ✓ Document root already exists at $DOC_ROOT"
+    print_success "✓ Document root already exists at $DOC_ROOT"
   fi
 
-  print_step 2 4 "Creating VirtualHost......"
+  print_step 2 4 "Creating VirtualHost..."
   CONF_PATH="${SITES_AVAILABLE}/${SITE_NAME}.conf"
 
   sudo tee "$CONF_PATH" >/dev/null <<EOF
@@ -68,13 +81,13 @@ site_create() {
     DocumentRoot ${DOC_ROOT}
 
     <Directory ${DOC_ROOT}>
-        Options Indexes FollowSymLinks
+        Options -Indexes +FollowSymLinks
         AllowOverride All
         Require all granted
     </Directory>
 
     <FilesMatch "\\.php$">
-        SetHandler "proxy:unix:/run/php/php${PHP_VER}-fpm.sock|fcgi://localhost/"
+        SetHandler "proxy:unix:${PHP_SOCKET}|fcgi://localhost/"
     </FilesMatch>
 
     ErrorLog \${APACHE_LOG_DIR}/${SITE_NAME}-error.log
@@ -82,12 +95,12 @@ site_create() {
 </VirtualHost>
 EOF
 
-  print_success "✓ ✓ VirtualHost created at $CONF_PATH"
+  print_success "✓ VirtualHost created at $CONF_PATH"
 
-  print_step 3 4 "Enabling site and reloading Apache......"
+  print_step 3 4 "Enabling site and reloading Apache..."
   sudo a2ensite "${SITE_NAME}.conf" >/dev/null
   sudo systemctl reload apache2
-  print_success "✓ ✓ Site ${SITE_NAME}.local enabled"
+  print_success "✓ Site ${SITE_NAME}.local enabled"
 
   print_step 4 4 "Creating sample index.php..."
   if [[ ! -f "${DOC_ROOT}/index.php" ]]; then
@@ -96,19 +109,23 @@ EOF
     print_success "✓ Sample index.php created"
   fi
 
-  # Register for subdirectory (IP) access
+  # Update multiphp alias config for subdirectory (IP) access
+  # Remove any previous block for same DOC_ROOT
+  sudo sed -i "\|<Directory ${DOC_ROOT}>|,|</Directory>|d" "$MULTIPHP_CONF"
+
   sudo tee -a "$MULTIPHP_CONF" >/dev/null <<EOF
 
-# Auto-generated for ${SITE_NAME}
+# Auto-generated for ${SITE_NAME} (${PHP_VER})
 <Directory ${DOC_ROOT}>
     <FilesMatch "\\.php$">
-        SetHandler "proxy:unix:/run/php/php${PHP_VER}-fpm.sock|fcgi://localhost/"
+        SetHandler "proxy:unix:${PHP_SOCKET}|fcgi://localhost/"
     </FilesMatch>
 </Directory>
 EOF
 
-  # Add to hosts mapping file
-  echo "192.168.56.110   ${SITE_NAME}.local" | sudo tee -a "$HOSTS_FILE" >/dev/null
+  # Add to hosts mapping file (avoid duplicates)
+  grep -q "${SITE_NAME}.local" "$HOSTS_FILE" 2>/dev/null || \
+    echo "${APACHE_IP}   ${SITE_NAME}.local" | sudo tee -a "$HOSTS_FILE" >/dev/null
 
   sudo systemctl reload apache2
 
@@ -117,10 +134,12 @@ EOF
   echo ""
   echo "You can access your site at:"
   echo "  → http://${SITE_NAME}.local"
-  echo "  → or http://192.168.56.110/${SITE_NAME}/"
+  echo "  → or http://${APACHE_IP}/${SITE_NAME}/"
   echo ""
-  echo "To sync your host's /etc/hosts, run:"
-  echo "  piscobox hosts-sync"
+  echo "Next step: sync your host's /etc/hosts file."
+  echo ""
+  echo "From your host machine (not inside the VM), run:"
+  echo "  ./piscobox-sync-hosts.sh"
   echo ""
 }
 
@@ -130,7 +149,7 @@ EOF
 hosts_sync() {
   echo ""
   echo "=========================================="
-  echo "     HOSTS SYNC UTILITY"
+  echo "     HOSTS SYNC INSTRUCTIONS"
   echo "=========================================="
   echo ""
 
@@ -142,11 +161,14 @@ hosts_sync() {
     return
   fi
 
-  echo "Run this command on your host machine to sync:"
+  echo "To properly sync your host's /etc/hosts, use the new helper script:"
   echo ""
-  echo "  cat .piscobox-hosts | sudo tee -a /etc/hosts"
+  echo "  ./piscobox-sync-hosts.sh"
   echo ""
-  echo "Current entries:"
+  echo "This script will safely merge entries from .piscobox-hosts into /etc/hosts,"
+  echo "avoiding duplicates and keeping your system clean."
+  echo ""
+  echo "Current generated entries:"
   echo "------------------------------------------"
   cat "$HOSTS_FILE"
   echo "------------------------------------------"

@@ -2,3 +2,7 @@
 public_html/**/demo
 public_html/**/demos
 *.piscobox-hosts
+
+public_html/*/
+!public_html/piscoweb/
+!public_html/piscoweb/**
