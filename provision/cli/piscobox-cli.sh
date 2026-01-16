@@ -32,6 +32,7 @@ Usage:
 Available commands:
   site create           Create a new VirtualHost and PHP site
   hosts-sync            Display instructions to sync /etc/hosts on your host
+  install demo-php      Install the PHP demos
   help                  Show this help message
 EOF
 }
@@ -175,6 +176,47 @@ hosts_sync() {
   echo ""
 }
 
+install_demo_php() {
+  #saludar
+  print_header "· PISCOBOX PHP DEMO INSTALLER ·"
+  #solicitar confirmación, descomprimir demos en un directorio temporal, mover demos a public_html/piscoweb/demos/php, despedir y mostrar la salida."
+  print_warning "The installation will take place in public_html/piscoweb/demos..."
+  print_warning "The 'videogames' table will be created in the 'piscoboxdb' database"
+  echo -n "Do you want to proceed with the installation? Y/n: "
+  read rs;
+  if [[ $rs == "y" || $rs == "Y" || $rs == "yes" || $rs == "YES" || $rs == "s" || $rs == "si" || $rs == "sí" || $rs == "SI" || $rs == "SÍ" ]]; then
+   # instalado DEMOS PHP
+   print_success "installing PHP demos...❯❯❯❯"
+   rm -rf /var/tmp/demos/ 
+   mkdir -p /var/tmp/demos/php
+
+   print_step 1 3 " Unpacking PHP demo"
+   unzip /vagrant/provision/files/demos/demo-php.zip -d /var/tmp/demos/php
+   if [ $? -eq 0 ];then
+    print_success "PHP demo unpacking to /var/tmp"
+  fi
+
+  print_step 2 3 " Creating the necessary tables..."
+  mysql -u piscoboxuser -pDevPassword123 piscoboxdb < /var/tmp/demos/php/create_gamevault.sql
+  if [ $? -eq 0 ];then
+    print_success "Tables created"
+  fi
+
+  print_step 3 3 " Creating the destination directory and moving the files"
+  sudo mkdir -p /var/www/html/piscoweb/demos/
+  sudo mv /var/tmp/demos/php/*.php /var/www/html/piscoweb/demos/
+  sudo mv /var/tmp/demos/php/demos.json /var/www/html/piscoweb/demos/
+  if [ $? -eq 0 ];then
+    print_success "demos php instalados en public_html/piscoweb/demos/ "
+    rm -r /var/tmp/demos/
+  fi
+
+else
+ print_error "The demos will not be installed "
+fi
+# mysql -u piscoboxuser -pDevPassword123 piscoboxdb < /vagrant/provision/files/create_gamevault.sql
+}
+
 # ============================================================
 #  Command dispatcher
 # ============================================================
@@ -191,6 +233,13 @@ case "$COMMAND" in
     ;;
   help|--help|-h|"")
     show_help
+    ;;
+  install)
+    SUBCMD=$1
+    case "$SUBCMD" in
+      demo-php) install_demo_php ;;
+      *) show_help ;;
+    esac
     ;;
   *)
     print_error "Unknown command: $COMMAND"
