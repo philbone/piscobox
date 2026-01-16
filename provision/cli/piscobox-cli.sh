@@ -33,6 +33,7 @@ Available commands:
   site create           Create a new VirtualHost and PHP site
   hosts-sync            Display instructions to sync /etc/hosts on your host
   install demo-php      Install the PHP demos
+  uninstall demo-php    Uninstall the PHP demos
   help                  Show this help message
 EOF
 }
@@ -218,6 +219,36 @@ fi
 }
 
 # ============================================================
+#  Function: uninstall_demo_php
+# ============================================================
+uninstall_demo_php() {
+  print_header "· PISCOBOX PHP DEMO UNINSTALLER ·"   
+  print_warning "The PHP files in public_html/piscoweb/demos will be ERASED"
+  print_warning "The 'videogames' table will be DELETED from 'piscoboxdb' database"
+  echo -n "Do you want to proceed with the delete process? Y/n: "
+  read rs;
+  if [[ $rs == "y" || $rs == "Y" || $rs == "yes" || $rs == "YES" || $rs == "s" || $rs == "si" || $rs == "sí" || $rs == "SI" || $rs == "SÍ" ]]; then
+    print_success "Uninstall PHP demos...❯❯❯❯"
+
+    print_step 1 3 "Deleting the database tables "
+    mysql -u piscoboxuser -pDevPassword123 -D piscoboxdb -e 'DROP TABLE IF EXISTS videogames;'
+
+    print_step 2 3 "Removing all PHP files from the demos directory "
+    sudo rm -rf /var/www/html/piscoweb/demos/*.php
+    sudo rm -rf /var/www/html/piscoweb/demos/demos.json
+
+    if [ -z "$( ls -A '/var/www/html/piscoweb/demos/' )" ]; then    
+     print_step 3 3 "Removing the empty demos directory "
+     sudo rm -rf /var/www/html/piscoweb/demos/
+   else
+     echo "Not Empty"
+   fi
+  else
+    echo "uninstall Canceled"
+  fi
+}
+
+# ============================================================
 #  Command dispatcher
 # ============================================================
 case "$COMMAND" in
@@ -238,6 +269,13 @@ case "$COMMAND" in
     SUBCMD=$1
     case "$SUBCMD" in
       demo-php) install_demo_php ;;
+      *) show_help ;;
+    esac
+    ;;
+  uninstall)
+    SUBCMD=$1
+    case "$SUBCMD" in
+      demo-php) uninstall_demo_php ;;
       *) show_help ;;
     esac
     ;;
