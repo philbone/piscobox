@@ -1,8 +1,12 @@
 .vagrant/
-public_html/**/demo
-public_html/**/demos
-*.piscobox-hosts
 
+# ignora todo lo que hay en public_html, excepto lo que hay en piscoweb
 public_html/*/
 !public_html/piscoweb/
 !public_html/piscoweb/**
+
+# ignora demos dentro de public_html
+public_html/**/demo
+public_html/**/demos
+
+*.piscobox-hosts
