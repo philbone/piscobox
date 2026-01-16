@@ -34,6 +34,7 @@ Available commands:
   hosts-sync            Display instructions to sync /etc/hosts on your host
   install demo-php      Install the PHP demos
   uninstall demo-php    Uninstall the PHP demos
+  mysql login           Direct access to MySQL as the user "piscoboxuser"
   help                  Show this help message
 EOF
 }
@@ -249,6 +250,13 @@ uninstall_demo_php() {
 }
 
 # ============================================================
+#  Function: mysql login
+# ============================================================
+mysql_login() {
+  mysql -u piscoboxuser -pDevPassword123
+}
+
+# ============================================================
 #  Command dispatcher
 # ============================================================
 case "$COMMAND" in
@@ -276,6 +284,13 @@ case "$COMMAND" in
     SUBCMD=$1
     case "$SUBCMD" in
       demo-php) uninstall_demo_php ;;
+      *) show_help ;;
+    esac
+    ;;
+  mysql|mariadb)
+    SUBCMD=$1
+    case "$SUBCMD" in
+      login) mysql_login ;;
       *) show_help ;;
     esac
     ;;
