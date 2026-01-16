@@ -136,8 +136,10 @@ EOF
   echo "  → http://${SITE_NAME}.local"
   echo "  → or http://${APACHE_IP}/${SITE_NAME}/"
   echo ""
-  echo "To sync your host's /etc/hosts, run:"
-  echo "  piscobox hosts-sync"
+  echo "Next step: sync your host's /etc/hosts file."
+  echo ""
+  echo "From your host machine (not inside the VM), run:"
+  echo "  ./piscobox-sync-hosts.sh"
   echo ""
 }
 
@@ -147,7 +149,7 @@ EOF
 hosts_sync() {
   echo ""
   echo "=========================================="
-  echo "     HOSTS SYNC UTILITY"
+  echo "     HOSTS SYNC INSTRUCTIONS"
   echo "=========================================="
   echo ""
 
@@ -159,11 +161,14 @@ hosts_sync() {
     return
   fi
 
-  echo "Run this command on your host machine to sync:"
+  echo "To properly sync your host's /etc/hosts, use the new helper script:"
   echo ""
-  echo "  cat .piscobox-hosts | sudo tee -a /etc/hosts"
+  echo "  ./piscobox-sync-hosts.sh"
   echo ""
-  echo "Current entries:"
+  echo "This script will safely merge entries from .piscobox-hosts into /etc/hosts,"
+  echo "avoiding duplicates and keeping your system clean."
+  echo ""
+  echo "Current generated entries:"
   echo "------------------------------------------"
   cat "$HOSTS_FILE"
   echo "------------------------------------------"
