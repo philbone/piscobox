@@ -77,24 +77,141 @@ This demo page confirms:
 
 Additionally, the project includes helper commands to install or remove **PHP and MySQL demo applications** for testing and experimentation.
 
-## 🖥️ Piscobox CLI
+# 🖥️ Piscobox CLI
 
-PiscoBox ships with a built-in CLI tool to streamline daily tasks.
+Piscobox includes a built-in CLI tool to simplify common tasks.
 
-**Usage:**
-
+Usage:
 ```text
 piscobox [command] [options]
 ```
 
-**Available commands:**
+Available commands:
 
-* `site create` – Create a new VirtualHost and PHP site
-* `hosts-sync` – Display instructions to sync `/etc/hosts` on your host
-* `install demo-php` – Install the PHP demos
-* `uninstall demo-php` – Uninstall the PHP demos
-* `mysql login` – Direct access to MySQL as the user `piscoboxuser`
-* `help` – Show help information
+|         Command     |Description|Flags / Notes|
+|---------------------|:---------:|-------------|
+| `site create`         | Create a new VirtualHost and PHP site. Interactive mode prompts for site name, PHP version and document root. | — |
+| `site delete <site>`  | Delete a VirtualHost and its configuration. Creates a backup of the `.conf`, disables the site (a2dissite), cleans multiphp aliases and removes the entry from `/vagrant/.piscobox-hosts`. | `--doc-root <path>` — override detected DocumentRoot from the vhost. <br>`--no-reload` — do not reload Apache. <br>`--force` — non-interactive: skip prompts and remove docroot automatically (subject to safety checks). <br>Interactive mode: prompts whether to delete the document root (default: Yes). <br>CLI protects against removing dangerous paths such as `/`, `/var`, `/var/www`, `/var/www/html`. |
+| `site set-php <site> <ver>` | Change the PHP-FPM version used by a site. Replaces the socket in `SetHandler` and updates multiphp alias configuration. | `--doc-root <path>` — override the document root used for aliases. <br>`--no-reload` — do not reload Apache. <br>`--force` — apply without prompting (non-interactive). |
+| `hosts-sync` | Display instructions to sync `/etc/hosts` on your host (uses `piscobox-sync-hosts.sh`). | — |
+| `install demo-php` | Install the included PHP demos. | — |
+| `uninstall demo-php` | Uninstall the PHP demos. | — |
+| `mysql login` | Direct access to MySQL as the `piscoboxuser` user. | — |
+| `help` | Show this help message. | — |
+
+Behavior and safety
+- Before removing a `.conf`, the CLI always creates a timestamped backup (e.g. `mysite.conf.bak-YYYYMMDD-HHMMSS`).
+- For `site delete`:
+  - Interactive mode asks for confirmation to delete the site and then asks whether to delete the document root (default: `Y`).
+  - Non-interactive mode with `--force` skips prompts and will remove the document root automatically unless the path is considered dangerous.
+  - Dangerous/common system paths are preserved and deletion is refused with a warning: examples include `/`, `/var`, `/var/www`, `/var/www/html`.
+  - Removal of the multiphp block is performed by matching common generated patterns; if the automatic cleanup doesn't match, the CLI will inform the user to review the multiphp config manually.
+- For `site set-php`:
+  - A backup of the site `.conf` is created before modification.
+  - The command attempts to replace PHP-FPM socket references in the vhost and in the multiphp aliases configuration.
+  - Use `--doc-root` when the document root differs from the value in the vhost or when you want to explicitly control which multiphp alias block is updated.
+
+
+  ## Examples
+
+  Below are complete examples demonstrating each command. Interactive commands show the expected prompts; non-interactive examples show common flags and behavior.
+
+  
+  ### help
+  ```bash
+  # Show CLI help
+  piscobox help
+  piscobox --help
+  piscobox -h
+  # or just
+  piscobox
+  ```
+
+  ### site create (interactive)
+  ```bash
+  # Create a new site interactively
+  piscobox site create
+
+  # Example interactive session (user input in <>):
+  # Enter site name (e.g. mysite): <mysite>
+  # Enter PHP version [8.3]: <8.1>
+  # Enter document root [/var/www/html/mysite]: </var/www/html/mysite>
+  # ...progress messages...
+  # ✓ Site created successfully!
+  # You can access your site at: http://mysite.local or http://192.168.56.110/mysite/
+  ```
+
+  ### site delete
+  ```bash
+  # Delete a site interactively (asks to confirm and whether to delete document root; default: Yes)
+  piscobox site delete
+
+  # Example interactive session:
+  # Enter site name (e.g. mysite): <mysite>
+  # Are you sure you want to delete this site? This will disable the site and remove its vhost. Proceed? [y/N]: <y>
+  # Delete document root '/var/www/html/mysite'? [Y/n]: <Y>
+  # ...backup and removal messages...
+  # ✓ Site mys ite deleted/unset locally.
+  # Reminder: run ./piscobox-sync-hosts.sh on your host to remove the mysite.local entry
+
+  # The simple way
+  piscobox site delete mysite
+
+  # Non-interactive: delete a site, explicitly specify doc root, force (no prompts), and skip Apache reload
+  piscobox site delete mysite --doc-root /var/www/html/mysite --force --no-reload
+  ```
+
+  ### site set-php
+  ```bash
+  # Change PHP version interactively (prompts if arguments missing)
+  piscobox site set-php
+
+  # Non-interactive: change mysite to PHP 8.1
+  piscobox site set-php mysite 8.1
+
+  # With explicit doc-root and without reloading Apache immediately
+  piscobox site set-php mysite 7.4 --doc-root /var/www/html/mysite --no-reload
+  ```
+
+  ### hosts-sync
+  ```bash
+  # Display instructions to safely sync /etc/hosts on the host machine
+  piscobox hosts-sync
+
+  # Typical output instructs you to run the helper on the host:
+  # ./piscobox-sync-hosts.sh
+  ```
+
+  ### install demo-php
+  ```bash
+  # Install the bundled PHP demos (interactive confirmation expected)
+  piscobox install demo-php
+
+  # Example interactive session:
+  # Do you want to proceed with the installation? Y/n: <Y>
+  # ...installation steps...
+  # ✓ PHP demo unpacked and installed to /var/www/html/piscoweb/demos/
+  ```
+
+  ### uninstall demo-php
+  ```bash
+  # Uninstall the PHP demos (interactive confirmation expected)
+  piscobox uninstall demo-php
+
+  # Example interactive session:
+  # Are you sure you want to uninstall the PHP demos? [y/N]: <y>
+  # ...removal steps...
+  # ✓ Demos removed
+  ```
+
+  ### mysql login
+  ```bash
+  # Open a MySQL client as the piscobox user
+  piscobox mysql login
+
+  # Equivalent to:
+  # mysql -u piscoboxuser -pDevPassword123
+  ```
 
 > The README documents the availability of these commands; detailed usage is provided via the CLI itself.
 

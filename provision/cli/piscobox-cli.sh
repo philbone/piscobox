@@ -31,6 +31,8 @@ Usage:
 
 Available commands:
   site create                 Create a new VirtualHost and PHP site
+  site delete <site>          Delete a VirtualHost and remove its configuration
+                              Flags: --doc-root <path> (override doc root), --no-reload (don't reload Apache), --force (no prompts, remove doc root)
   site set-php <site> <ver>   Change the PHP-FPM version used by a site
                               Flags: --no-reload (don't reload Apache), --force (apply despite warnings)
   hosts-sync                  Display instructions to sync /etc/hosts on your host
@@ -42,10 +44,14 @@ Available commands:
 Examples:
   # Interactive
   piscobox site set-php
+  piscobox site delete
 
   # Non-interactive
   piscobox site set-php mysite 8.1
   piscobox site set-php mysite 7.4 --no-reload
+  piscobox site delete mysite
+  piscobox site delete mysite --doc-root /var/www/html/mysite
+  piscobox site delete mysite --doc-root /var/www/html/mysite --force --no-reload
 EOF
 }
 
@@ -154,6 +160,147 @@ EOF
   echo "From your host machine (not inside the VM), run:"
   echo "  ./piscobox-sync-hosts.sh"
   echo ""
+}
+
+
+# ============================================================
+#  Function: site_delete
+# ============================================================
+site_delete() {
+  local SITE_NAME="$1"
+  shift || true
+
+  local NO_RELOAD=false
+  local FORCE=false
+  local OVERRIDE_DOC_ROOT=""
+
+  # Parse optional flags (after positional args)
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --no-reload) NO_RELOAD=true; shift ;;
+      --force) FORCE=true; shift ;;
+      --doc-root) OVERRIDE_DOC_ROOT="$2"; shift 2 ;;
+      *) break ;;
+    esac
+  done
+
+  # Interactive prompt for missing site name
+  if [[ -z "$SITE_NAME" ]]; then
+    read -rp "Enter site name (e.g. mysite): " SITE_NAME
+    [[ -z "$SITE_NAME" ]] && { print_error "Site name cannot be empty"; return 1; }
+  fi
+
+  CONF_PATH="${SITES_AVAILABLE}/${SITE_NAME}.conf"
+  if [[ ! -f "$CONF_PATH" ]]; then
+    print_error "No VirtualHost found at $CONF_PATH"
+    echo "Check available sites in ${SITES_AVAILABLE}."
+    return 1
+  fi
+
+  # Determine DocumentRoot from override or try to extract from conf
+  DOC_ROOT="$OVERRIDE_DOC_ROOT"
+  if [[ -z "$DOC_ROOT" ]]; then
+    DOC_ROOT=$(grep -m1 -E 'DocumentRoot[[:space:]]+' "$CONF_PATH" | awk '{print $2}' || true)
+  fi
+
+  echo ""
+  print_header "· SITE DELETION ·"
+  echo "Site: $SITE_NAME"
+  echo "VirtualHost: $CONF_PATH"
+  [[ -n "$DOC_ROOT" ]] && echo "DocumentRoot: $DOC_ROOT"
+  echo ""
+
+  if ! $FORCE; then
+    echo -n "Are you sure you want to delete this site? This will disable the site and remove its vhost. Proceed? [y/N]: "
+    read -r ans
+    if [[ ! "$ans" =~ ^([yY]|[sS]|sí|si)$ ]]; then
+      echo "Deletion cancelled."
+      return 0
+    fi
+  fi
+
+  # Backup conf
+  TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+  BACKUP="${CONF_PATH}.bak-${TIMESTAMP}"
+  sudo cp "$CONF_PATH" "$BACKUP" || { print_error "Failed to create backup of $CONF_PATH"; return 1; }
+  print_step 1 6 "Backup created: $BACKUP"
+
+  # Disable site
+  print_step 2 6 "Disabling site ${SITE_NAME}.conf..."
+  sudo a2dissite "${SITE_NAME}.conf" >/dev/null 2>&1 || true
+  print_success "✓ Site disabled"
+
+  # Remove vhost file
+  print_step 3 6 "Removing VirtualHost file..."
+  sudo rm -f "$CONF_PATH" || { print_error "Failed to remove $CONF_PATH"; return 1; }
+  print_success "✓ VirtualHost removed"
+
+  # Remove multiphp alias block for this DOC_ROOT or SITE_NAME
+  if [[ -f "$MULTIPHP_CONF" ]]; then
+    print_step 4 6 "Cleaning multiphp aliases..."
+    # Try to remove block by matching the auto-generated comment or Directory block
+    sudo sed -i "\|# Auto-generated for ${SITE_NAME} (|,|</Directory>|d" "$MULTIPHP_CONF" 2>/dev/null || true
+    sudo sed -i "\|<Directory ${DOC_ROOT}>|,|</Directory>|d" "$MULTIPHP_CONF" 2>/dev/null || true
+    print_success "✓ Multiphp aliases cleaned"
+  fi
+
+  # Remove from hosts mapping file
+  if [[ -f "$HOSTS_FILE" ]]; then
+    print_step 5 6 "Removing host mapping from $HOSTS_FILE..."
+    sudo sed -i "/${SITE_NAME}\.local/d" "$HOSTS_FILE" 2>/dev/null || true
+    print_success "✓ Host mapping removed from $HOSTS_FILE"
+  fi
+
+  # Decide whether to remove document root
+  if [[ -n "$DOC_ROOT" ]]; then
+    if $FORCE; then
+      # Safety checks to avoid removing common system paths
+      case "$DOC_ROOT" in
+        "/"|"/var"|"/var/www"|"/var/www/html"|"") 
+          print_warning "Refusing to remove unsafe document root: $DOC_ROOT"
+          ;;
+        *)
+          print_step 6 6 "Removing document root: $DOC_ROOT"
+          sudo rm -rf "$DOC_ROOT" || print_warning "Failed to remove $DOC_ROOT (you may need to remove files manually)"
+          print_success "✓ Document root removed (if existed)"
+          ;;
+      esac
+    else
+      # Interactive prompt, default YES
+      echo ""
+      read -rp "Delete document root '${DOC_ROOT}'? [Y/n]: " del_ans
+      del_ans=${del_ans:-Y}
+      if [[ "$del_ans" =~ ^([yY]|[sS]|sí|si)$ ]]; then
+        case "$DOC_ROOT" in
+          "/"|"/var"|"/var/www"|"/var/www/html"|"")
+            print_warning "Refusing to remove unsafe document root: $DOC_ROOT"
+            ;;
+          *)
+            print_step 6 6 "Removing document root: $DOC_ROOT"
+            sudo rm -rf "$DOC_ROOT" || print_warning "Failed to remove $DOC_ROOT (you may need to remove files manually)"
+            print_success "✓ Document root removed (if existed)"
+            ;;
+        esac
+      else
+        echo "Document root preserved: $DOC_ROOT"
+      fi
+    fi
+  fi
+
+  # Reload apache unless requested not to
+  if ! $NO_RELOAD; then
+    sudo systemctl reload apache2 || { print_warning "Failed to reload apache2; please check apache configuration"; }
+    echo ""
+    print_success "✓ Apache reloaded"
+  else
+    print_warning "Apache reload skipped (--no-reload)"
+  fi
+
+  echo ""
+  print_success "Site ${SITE_NAME} deleted/unset locally."
+  echo "If you use host-level /etc/hosts entries, run ./piscobox-sync-hosts.sh on your host to sync and remove the $SITE_NAME.local entry."
+  echo ""
+  return 0
 }
 
 # ============================================================
@@ -407,6 +554,7 @@ case "$COMMAND" in
       create) site_create ;;
       set-php) shift; site_set_php_version "$@" ;;
       set-php-version) shift; site_set_php_version "$@" ;;
+      delete) shift; site_delete "$@" ;;
       *) show_help ;;
     esac
     ;;
