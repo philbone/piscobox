@@ -30,12 +30,22 @@ Usage:
   piscobox [command] [options]
 
 Available commands:
-  site create           Create a new VirtualHost and PHP site
-  hosts-sync            Display instructions to sync /etc/hosts on your host
-  install demo-php      Install the PHP demos
-  uninstall demo-php    Uninstall the PHP demos
-  mysql login           Direct access to MySQL as the user "piscoboxuser"
-  help                  Show this help message
+  site create                 Create a new VirtualHost and PHP site
+  site set-php <site> <ver>   Change the PHP-FPM version used by a site
+                              Flags: --no-reload (don't reload Apache), --force (apply despite warnings)
+  hosts-sync                  Display instructions to sync /etc/hosts on your host
+  install demo-php            Install the PHP demos
+  uninstall demo-php          Uninstall the PHP demos
+  mysql login                 Direct access to MySQL as the user "piscoboxuser"
+  help                        Show this help message
+
+Examples:
+  # Interactive
+  piscobox site set-php
+
+  # Non-interactive
+  piscobox site set-php mysite 8.1
+  piscobox site set-php mysite 7.4 --no-reload
 EOF
 }
 
@@ -144,6 +154,137 @@ EOF
   echo "From your host machine (not inside the VM), run:"
   echo "  ./piscobox-sync-hosts.sh"
   echo ""
+}
+
+# ============================================================
+#  Function: site_set_php_version
+#  Usage:
+#   Non-interactive: piscobox site set-php <site_name> <php_version> [--doc-root <path>] [--no-reload] [--force]
+#   Interactive (only for missing site/version): piscobox site set-php
+# ============================================================
+site_set_php_version() {
+  local SITE_NAME="$1"
+  local PHP_VER="$2"
+  shift 2 || true
+
+  local NO_RELOAD=false
+  local FORCE=false
+  local OVERRIDE_DOC_ROOT=""
+
+  # Parse optional flags (after positional args)
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --no-reload) NO_RELOAD=true; shift ;;
+      --force) FORCE=true; shift ;;
+      --doc-root) OVERRIDE_DOC_ROOT="$2"; shift 2 ;;
+      *) break ;;
+    esac
+  done
+
+  # Interactive prompts only for missing site name / php version
+  if [[ -z "$SITE_NAME" ]]; then
+    read -rp "Enter site name (e.g. mysite): " SITE_NAME
+    [[ -z "$SITE_NAME" ]] && { print_error "Site name cannot be empty"; return 1; }
+  fi
+
+  if [[ -z "$PHP_VER" ]]; then
+    read -rp "Enter PHP version (e.g. 8.3): " PHP_VER
+    PHP_VER=${PHP_VER:-8.3}
+  fi
+
+  local CONF_PATH="${SITES_AVAILABLE}/${SITE_NAME}.conf"
+  if [[ ! -f "$CONF_PATH" ]]; then
+    print_error "VirtualHost file not found: $CONF_PATH"
+    return 1
+  fi
+
+  # Extract DocumentRoot from the vhost conf (used to update MULTIPHP_CONF)
+  local DOC_ROOT
+  DOC_ROOT=$(grep -i '^[[:space:]]*DocumentRoot' "$CONF_PATH" | head -n1 | awk '{print $2}' | tr -d '"')
+
+  # Allow override via --doc-root
+  if [[ -n "$OVERRIDE_DOC_ROOT" ]]; then
+    DOC_ROOT="$OVERRIDE_DOC_ROOT"
+  fi
+
+  if [[ -z "$DOC_ROOT" ]]; then
+    print_error "No DocumentRoot could be determined from $CONF_PATH."
+    echo "If your VirtualHost uses includes or a non-standard layout, provide the document root with --doc-root <path>."
+    return 1
+  fi
+
+  local PHP_SOCKET="/run/php/php${PHP_VER}-fpm.sock"
+  if [[ ! -S "$PHP_SOCKET" ]]; then
+    if systemctl is-active --quiet "php${PHP_VER}-fpm"; then
+      print_warning "Socket $PHP_SOCKET not found but service php${PHP_VER}-fpm is active. Continuing."
+    else
+      if [[ "$FORCE" == true ]]; then
+        print_warning "PHP socket $PHP_SOCKET not found and service php${PHP_VER}-fpm seems down/not installed. Continuing due to --force."
+      else
+        print_error "PHP ${PHP_VER} does not seem to be installed or php${PHP_VER}-fpm is not running."
+        echo "Expected socket: $PHP_SOCKET"
+        echo "If you want to force the change anyway, re-run with --force"
+        return 1
+      fi
+    fi
+  fi
+
+  # Backup the vhost file
+  local BACKUP="${CONF_PATH}.bak.$(date +%s)"
+  sudo cp "$CONF_PATH" "$BACKUP" || { print_error "Failed to create backup of $CONF_PATH"; return 1; }
+  print_step 1 3 "Backup created: $BACKUP"
+
+  # Replace any existing php*-fpm socket in the SetHandler lines of the vhost
+  sudo sed -i.bak -E "s|(proxy:unix:)/run/php/php[0-9]+\.[0-9]+-fpm.sock|\1${PHP_SOCKET}|g" "$CONF_PATH" || true
+  sudo sed -i.bak -E "s|(proxy:unix:)/run/php/php[0-9]+-fpm.sock|\1${PHP_SOCKET}|g" "$CONF_PATH" || true
+
+  # Fallback replacement if needed
+  if ! grep -q "${PHP_SOCKET}" "$CONF_PATH"; then
+    sudo perl -0777 -pe "s|(<FilesMatch \\\\\"\\\\.php\\\\\"\\>\\n\\s*SetHandler\\s+\\\")[^\"]*(\\\"\\s*\\/)\\s*|\\1proxy:unix:${PHP_SOCKET}|s" -i "$CONF_PATH" 2>/dev/null || true
+  fi
+
+  # Update multiphp aliases: remove prior block for DOC_ROOT then append new one
+  if [[ -f "$MULTIPHP_CONF" ]]; then
+    sudo sed -i "\|<Directory ${DOC_ROOT}>|,|</Directory>|d" "$MULTIPHP_CONF" || true
+  else
+    sudo tee "$MULTIPHP_CONF" >/dev/null <<<"# Dynamic aliases for subdirectory PHP handling"
+  fi
+
+  sudo tee -a "$MULTIPHP_CONF" >/dev/null <<EOF
+
+# Auto-generated for ${SITE_NAME} (${PHP_VER})
+<Directory ${DOC_ROOT}>
+    <FilesMatch "\\.php$">
+        SetHandler "proxy:unix:${PHP_SOCKET}|fcgi://localhost/"
+    </FilesMatch>
+</Directory>
+EOF
+
+  print_step 2 3 "Configuration updated for ${SITE_NAME} -> PHP ${PHP_VER}"
+
+  # Reload Apache unless requested not to
+  if [[ "$NO_RELOAD" == true ]]; then
+    print_warning "Skipping apache reload due to --no-reload flag. Remember to reload apache2 manually."
+  else
+    print_step 3 3 "Reloading Apache..."
+    if sudo systemctl reload apache2; then
+      print_success "✓ PHP version for site ${SITE_NAME} set to ${PHP_VER} and Apache reloaded successfully."
+    else
+      print_error "Apache reload failed after applying changes."
+      if [[ "$FORCE" == true ]]; then
+        print_warning "Continuing despite reload failure due to --force. Check Apache logs for details."
+      else
+        print_warning "Attempting rollback from backup..."
+        sudo cp "$BACKUP" "$CONF_PATH" || print_error "Rollback failed: could not restore $BACKUP to $CONF_PATH"
+        sudo systemctl reload apache2 || print_warning "Rollback reload failed — please inspect Apache configuration"
+        return 1
+      fi
+    fi
+  fi
+
+  echo ""
+  print_success "Operation complete. You can verify with a phpinfo() or curl -H \"Host: ${SITE_NAME}.local\" http://127.0.0.1/"
+  return 0
 }
 
 # ============================================================
@@ -264,6 +405,8 @@ case "$COMMAND" in
     SUBCMD=$1
     case "$SUBCMD" in
       create) site_create ;;
+      set-php) shift; site_set_php_version "$@" ;;
+      set-php-version) shift; site_set_php_version "$@" ;;
       *) show_help ;;
     esac
     ;;
