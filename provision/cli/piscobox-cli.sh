@@ -296,6 +296,9 @@ site_delete() {
     print_warning "Apache reload skipped (--no-reload)"
   fi
 
+  # Limpieza de backups antiguos
+  cleanup_sites_available_bak
+
   echo ""
   print_success "Site ${SITE_NAME} deleted/unset locally."
   echo "If you use host-level /etc/hosts entries, run ./piscobox-sync-hosts.sh on your host to sync and remove the $SITE_NAME.local entry."
@@ -429,6 +432,9 @@ EOF
     fi
   fi
 
+  # Limpieza de backups antiguos
+  cleanup_sites_available_bak
+
   echo ""
   print_success "Operation complete. You can verify with a phpinfo() or curl -H \"Host: ${SITE_NAME}.local\" http://127.0.0.1/"
   return 0
@@ -545,6 +551,29 @@ mysql_login() {
 }
 
 # ============================================================
+#  Function: cleanup_sites_available_bak
+# ============================================================
+cleanup_sites_available_bak() {
+    local backup_dir="/etc/apache2/sites-available"
+    local keep=2  # número de backups a conservar por sitio
+
+    # Agrupamos por nombre base del sitio (antes del .conf.bak)
+    for site in $(ls "$backup_dir"/*.conf.bak* 2>/dev/null | sed -E 's|.*/([^/]+)\.conf\.bak.*|\1|' | sort -u); do
+        # Listar los backups ordenados por fecha (más antiguos primero)
+        backups=( $(ls -1t "$backup_dir/${site}.conf.bak"* 2>/dev/null) )
+        
+        # Si hay más de $keep, eliminamos los antiguos
+        if [ ${#backups[@]} -gt $keep ]; then
+            old_backups=( "${backups[@]:$keep}" )
+            echo "🧹 Cleaning sites-available configuration of $site..."
+            sudo rm -f "${old_backups[@]}"
+          else
+            echo "There is nothing to clean"
+        fi
+    done
+}
+
+# ============================================================
 #  Command dispatcher
 # ============================================================
 case "$COMMAND" in
@@ -555,6 +584,7 @@ case "$COMMAND" in
       set-php) shift; site_set_php_version "$@" ;;
       set-php-version) shift; site_set_php_version "$@" ;;
       delete) shift; site_delete "$@" ;;
+      available-cleanup) cleanup_sites_available_bak ;;
       *) show_help ;;
     esac
     ;;
