@@ -33,7 +33,7 @@ echo ""
 
 # Step 2: Install basic tools
 print_step 3 4 "Installing basic tools"
-run_apt_command "apt-get install -y wget curl gnupg lsb-release ca-certificates net-tools git vim unzip"
+run_apt_command "apt-get install -y wget curl gnupg lsb-release ca-certificates net-tools git vim unzip bc"
 print_success "Basic tools installed successfully"
 echo ""
 

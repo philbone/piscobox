@@ -17,7 +17,6 @@ PiscoBox is a ready-to-use Vagrant box built on Debian, providing a complete LAM
 * **Operating System**: Debian Bookworm 64-bit
 * **Web Server**: Apache 2.4 with PHP-FPM integration
 * **PHP (Multi-Version Support)**:
-
   * Multiple PHP versions running simultaneously
   * Available versions: **8.4, 8.3, 8.0, 7.4, 7.0, 5.6**
   * Ideal for maintaining and developing multiple projects with different PHP requirements
@@ -27,12 +26,23 @@ PiscoBox is a ready-to-use Vagrant box built on Debian, providing a complete LAM
 * **Time Zone**: UTC with UTF-8 locale configuration
 * **Synchronized Directories**: Easy file sharing between host and VM
 * **Local Domains Assistant**:
-
   * Script to assist in the creation of local domains
   * Automatically updates `/etc/hosts` to register VirtualHosts created inside the VM
 * **CLI Tool (`piscobox`)**:
-
   * Command-line utility to simplify common development tasks
+
+## 🧩 Multi-version Xdebug Integration
+
+  * Fully automated installation and configuration of **Xdebug 3.x** for all supported PHP versions
+  * Legacy support for **Xdebug 2.x** when using older PHP (≤ 7.1)
+  * Automatically detects the appropriate configuration per version and creates `/etc/php/<ver>/mods-available/xdebug.ini` files
+  * Enables debugging across all PHP-FPM pools and CLI versions
+  * Includes a built-in verification step that confirms which versions have Xdebug active
+  * Default settings optimized for local development:
+    * Remote debugging via port `9003`
+    * Auto-discovery of host (10.0.2.2)  
+    * Detailed logging (`/var/log/xdebug.log`)
+  * Compatible with IDEs like VS Code and PhpStorm out of the box
 
 ## 🚀 Quick Start
 
@@ -76,6 +86,17 @@ This demo page confirms:
 * MySQL/MariaDB connectivity is working
 
 Additionally, the project includes helper commands to install or remove **PHP and MySQL demo applications** for testing and experimentation.
+
+You can also test Xdebug itself by visiting: [http://piscobox.local/test-xdebug.php](http://piscobox.local/test-xdebug.php)
+
+Or creating your own test file:
+```php
+<?php
+echo "Xdebug test\n";
+xdebug_info();
+```
+The page should display Xdebug version information for the PHP-FPM version in use.
+
 
 # 🖥️ Piscobox CLI
 
@@ -271,6 +292,36 @@ $mysqli = new mysqli("localhost", "piscoboxuser", "DevPassword123", "piscoboxdb"
 
 Apache automatically uses the right PHP version for each project,  
 so you can run different PHP versions at the same time without conflicts.
+
+### 🔍 Xdebug Configuration
+
+* Installed and enabled for all PHP versions during provisioning
+* Automatically detects PHP version and applies proper Xdebug syntax:
+  * Xdebug 3+ → uses xdebug.mode, xdebug.client_host, xdebug.start_with_request
+  * Xdebug 2.x → uses xdebug.remote_enable, xdebug.remote_autostart, xdebug.remote_host
+* Configured for both CLI and FPM contexts
+* Example of generated configuration for PHP 8.3:
+
+```ini
+zend_extension=xdebug.so
+
+[xdebug]
+xdebug.mode=debug
+xdebug.start_with_request=yes
+xdebug.client_host=10.0.2.2
+xdebug.client_port=9003
+xdebug.discover_client_host=1
+xdebug.log=/var/log/xdebug.log
+xdebug.log_level=7
+```
+
+* Logs stored at /var/log/xdebug.log
+* Automatically restarts Apache and all PHP-FPM versions after installation
+* Verification step summarizes all detected versions:
+```bash
+✓ Xdebug 3 active: 7.4 8.0 8.3 8.4
+⚠ Legacy Xdebug detected: 5.6 7.0
+```
 
 ### Apache Modules
 
