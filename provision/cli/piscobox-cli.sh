@@ -25,7 +25,7 @@ APACHE_IP="192.168.56.110"
 # ============================================================
 show_help() {
   cat <<EOF
-Piscobox CLI Utility
+Piscobox CLI Utility by Felipe M. <philbone@focused.cl>
 Usage:
   piscobox [command] [options]
 

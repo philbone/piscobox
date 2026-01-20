@@ -107,13 +107,14 @@ Usage:
 piscobox [command] [options]
 ```
 
-Available commands:
+### piscobox commands:
 
-|         Command     |Description|Flags / Notes|
-|---------------------|:---------:|-------------|
-| `site create`         | Create a new VirtualHost and PHP site. Interactive mode prompts for site name, PHP version and document root. | — |
-| `site delete <site>`  | Delete a VirtualHost and its configuration. Creates a backup of the `.conf`, disables the site (a2dissite), cleans multiphp aliases and removes the entry from `/vagrant/.piscobox-hosts`. | `--doc-root <path>` — override detected DocumentRoot from the vhost. <br>`--no-reload` — do not reload Apache. <br>`--force` — non-interactive: skip prompts and remove docroot automatically (subject to safety checks). <br>Interactive mode: prompts whether to delete the document root (default: Yes). <br>CLI protects against removing dangerous paths such as `/`, `/var`, `/var/www`, `/var/www/html`. |
+| Command | Description | Flags / Notes |
+|----------|:------------:|---------------|
+| `site create` | Create a new VirtualHost and PHP site. Interactive mode prompts for site name, PHP version and document root. | — |
+| `site delete <site>` | Delete a VirtualHost and its configuration. Creates a backup of the `.conf`, disables the site (a2dissite), cleans multiphp aliases and removes the entry from `/vagrant/.piscobox-hosts`. | `--doc-root <path>` — override detected DocumentRoot from the vhost. <br>`--no-reload` — do not reload Apache. <br>`--force` — non-interactive: skip prompts and remove docroot automatically (subject to safety checks). <br>Interactive mode: prompts whether to delete the document root (default: Yes). <br>CLI protects against removing dangerous paths such as `/`, `/var`, `/var/www`, `/var/www/html`. |
 | `site set-php <site> <ver>` | Change the PHP-FPM version used by a site. Replaces the socket in `SetHandler` and updates multiphp alias configuration. | `--doc-root <path>` — override the document root used for aliases. <br>`--no-reload` — do not reload Apache. <br>`--force` — apply without prompting (non-interactive). |
+| `site available-cleanup <mode>` | Clean or purge Apache site backup files (`.conf.bak` / `.conf.timestamp`) in `/etc/apache2/sites-available`. | `<mode>` accepts:<br>• *(default)* or `-normal` — keep only the most recent backup per site.<br>• `--purge` — remove **all** residual backup and timestamp files.<br>Useful for maintaining a clean Apache configuration directory. |
 | `hosts-sync` | Display instructions to sync `/etc/hosts` on your host (uses `piscobox-sync-hosts.sh`). | — |
 | `install demo-php` | Install the included PHP demos. | — |
 | `uninstall demo-php` | Uninstall the PHP demos. | — |
@@ -192,6 +193,17 @@ Behavior and safety
 
   # With explicit doc-root and without reloading Apache immediately
   piscobox site set-php mysite 7.4 --doc-root /var/www/html/mysite --no-reload
+  ```
+
+  ### site available-cleanup
+  ```bash
+  # Clean old baks located in /etc/apache2/sites-available
+  piscobox site available-cleanup
+  # Or
+  piscobox site available-cleanup -normal
+
+  # Remove all residual backup and timestamp files in /etc/apache2/sites-available
+  piscobox site available-cleanup --purge
   ```
 
   ### hosts-sync
