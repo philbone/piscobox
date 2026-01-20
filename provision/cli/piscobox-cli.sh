@@ -82,7 +82,7 @@ site_create() {
   read -rp "Enter document root [/var/www/html/${SITE_NAME}]: " DOC_ROOT
   DOC_ROOT=${DOC_ROOT:-/var/www/html/${SITE_NAME}}
 
-  print_step 1 4 "Creating document root..."
+  print_step 1 5 "Creating document root..."
   if [[ ! -d "$DOC_ROOT" ]]; then
     sudo mkdir -p "$DOC_ROOT"
     sudo chown -R vagrant:vagrant "$(dirname "$DOC_ROOT")"
@@ -91,7 +91,7 @@ site_create() {
     print_success "✓ Document root already exists at $DOC_ROOT"
   fi
 
-  print_step 2 4 "Creating VirtualHost..."
+  print_step 2 5 "Creating VirtualHost..."
   CONF_PATH="${SITES_AVAILABLE}/${SITE_NAME}.conf"
 
   sudo tee "$CONF_PATH" >/dev/null <<EOF
@@ -116,16 +116,32 @@ EOF
 
   print_success "✓ VirtualHost created at $CONF_PATH"
 
-  print_step 3 4 "Enabling site and reloading Apache..."
+  print_step 3 5 "Enabling site and reloading Apache..."
   sudo a2ensite "${SITE_NAME}.conf" >/dev/null
   sudo systemctl reload apache2
   print_success "✓ Site ${SITE_NAME}.local enabled"
 
-  print_step 4 4 "Creating sample index.php..."
+  print_step 4 5 "Creating sample index.php..."
   if [[ ! -f "${DOC_ROOT}/index.php" ]]; then
     echo "<?php phpinfo(); ?>" | sudo tee "${DOC_ROOT}/index.php" >/dev/null
     sudo chown www-data:www-data "${DOC_ROOT}/index.php"
     print_success "✓ Sample index.php created"
+  fi
+
+  print_step 5 5 "Creating sample info-xdebug.php..."
+  if [[ ! -f "${DOC_ROOT}/info-xdebug.php" ]]; then
+    echo '<?php
+// Mostrar versión y estado de Xdebug
+if (function_exists("xdebug_info")) {
+// Xdebug 3+
+  xdebug_info();
+} elseif (function_exists("xdebug_get_version")) {
+// Xdebug 2.x
+  echo "Xdebug version: " . xdebug_get_version() . "\n";
+  echo "Xdebug loaded in PHP " . PHP_VERSION . "\n";
+} else {
+  echo "Xdebug is not loaded for PHP " . PHP_VERSION . "\n";
+}' | sudo tee "${DOC_ROOT}/info-xdebug.php" >/dev/null            
   fi
 
   # Update multiphp alias config for subdirectory (IP) access
