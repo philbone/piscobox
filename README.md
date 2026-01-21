@@ -1,4 +1,4 @@
-# PiscoBox 🥂
+# Pisco Box 🥂
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](LICENSE)
 [![Vagrant](https://img.shields.io/badge/Vagrant-2.2+-blue.svg)](https://www.vagrantup.com)
@@ -8,9 +8,28 @@
 [![MariaDB](https://img.shields.io/badge/MariaDB-latest-A26D37.svg)](https://mariadb.com/docs/release-notes)
 [![Composer 2.x](https://img.shields.io/badge/Composer-2.x-89552D.svg)](https://getcomposer.org)
 
+> **Version:** 0.2.0  
+> **Repository:** [https://github.com/philbone/piscobox](https://github.com/philbone/piscobox)
+
+---
+
 **A modern LAMP stack for web developers based on Debian Bookworm**
 
-PiscoBox is a ready-to-use Vagrant box built on Debian, providing a complete LAMP development environment with Apache, multiple PHP versions, MariaDB, and essential tools for modern web development.
+Pisco Box is a ready-to-use Vagrant box built on Debian, providing a complete LAMP development environment with Apache, multiple PHP versions, MariaDB, and essential tools for modern web development.
+
+---
+
+## 💡 Why Pisco Box?
+
+Unlike generic LAMP boxes, **Pisco Box** provides:
+
+* Native **multi-PHP** support (no version switching hacks)
+* Automated **VirtualHost + domain management**
+* Full **Xdebug 3** integration for all PHP versions
+* A clean, safe, developer-friendly **CLI**
+* Built-in **safety checks and backups** for site operations
+
+---
 
 ## ✨ Features
 
@@ -19,37 +38,45 @@ PiscoBox is a ready-to-use Vagrant box built on Debian, providing a complete LAM
 * **PHP (Multi-Version Support)**:
   * Multiple PHP versions running simultaneously
   * Available versions: **8.4, 8.3, 8.0, 7.4, 7.0, 5.6**
-  * Ideal for maintaining and developing multiple projects with different PHP requirements
 * **Database**: MariaDB Server & Client
-* **Package Manager**: Composer 2.x for PHP dependencies
+* **Package Manager**: Composer 2.x
 * **Development Tools**: Git, Vim, Curl, Wget, and more
-* **Time Zone**: UTC with UTF-8 locale configuration
-* **Synchronized Directories**: Easy file sharing between host and VM
-* **Local Domains Assistant**:
-  * Script to assist in the creation of local domains
-  * Automatically updates `/etc/hosts` to register VirtualHosts created inside the VM
-* **CLI Tool (`piscobox`)**:
-  * Command-line utility to simplify common development tasks
+* **Time Zone**: UTC, locale UTF-8
+* **Synchronized Directories**: Seamless host ↔ VM file sharing
+* **Local Domains Assistant**: Automates `/etc/hosts` updates
+* **CLI Tool (`piscobox`)**: Simplifies common development tasks
+
+---
+
+## 🧠 Requirements
+
+**Host system:**
+* OS: Linux / macOS / Windows 10+
+* RAM: 2 GB minimum (4 GB recommended)
+* CPU: Dual-core or higher
+* Disk space: ~3 GB (base box + synced folders)
+
+**Dependencies:**
+* [Vagrant 2.2+](https://www.vagrantup.com/downloads)
+* [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (recommended), or Parallels / VMware
+
+---
 
 ## 🧩 Multi-version Xdebug Integration
 
-  * Fully automated installation and configuration of **Xdebug 3.x** for all supported PHP versions
-  * Legacy support for **Xdebug 2.x** when using older PHP (≤ 7.1)
-  * Automatically detects the appropriate configuration per version and creates `/etc/php/<ver>/mods-available/xdebug.ini` files
-  * Enables debugging across all PHP-FPM pools and CLI versions
-  * Includes a built-in verification step that confirms which versions have Xdebug active
-  * Default settings optimized for local development:
-    * Remote debugging via port `9003`
-    * Auto-discovery of host (10.0.2.2)  
-    * Detailed logging (`/var/log/xdebug.log`)
-  * Compatible with IDEs like VS Code and PhpStorm out of the box
+* Automated installation and configuration of **Xdebug 3.x** for all supported PHP versions  
+* Legacy support for **Xdebug 2.x** (for PHP ≤ 7.1)
+* Auto-detection of PHP version and per-version config in `/etc/php/<ver>/mods-available/xdebug.ini`
+* Debugging works across all PHP-FPM pools and CLI contexts
+* Default dev-optimized settings:
+  * Remote debugging via port `9003`
+  * Auto-discovery of host (`10.0.2.2`)
+  * Logs stored at `/var/log/xdebug.log`
+* Works out-of-the-box with **VS Code**, **PhpStorm**, and other IDEs
+
+---
 
 ## 🚀 Quick Start
-
-### Prerequisites
-
-* [Vagrant](https://www.vagrantup.com/downloads) (2.2+)
-* [VirtualBox](https://www.virtualbox.org/wiki/Downloads), Parallels, or VMware
 
 ### Installation
 
@@ -61,258 +88,163 @@ vagrant up
 
 ### Access
 
-Once running, you can access your environment:
-
 **Web Access:**
-
 * Main URL: [http://localhost:8080](http://localhost:8080)
 * With IP: [http://192.168.56.110](http://192.168.56.110)
-* With hostname: [http://piscobox.local](http://piscobox.local) (requires hosts configuration)
+* With hostname: [http://piscobox.local](http://piscobox.local)
 
-### SSH Access:
+> ⚠️ **Port conflicts?**  
+> If port `8080` is in use, edit your `Vagrantfile`:
+> ```ruby
+> config.vm.network "forwarded_port", guest: 80, host: 8081
+> ```
+> Then `vagrant reload` and visit [http://localhost:8081](http://localhost:8081)
+
+> 💡 **IP conflicts?**  
+> Default IP `192.168.56.110` is set in the `Vagrantfile`.  
+> You can change it if another VM uses the same subnet:
+> ```ruby
+> config.vm.network "private_network", ip: "192.168.56.120"
+> ```
+> Then `vagrant reload` and visit [http://192.168.56.120](http://192.168.56.120)
+
+### SSH Access
 
 ```bash
 vagrant ssh
 ```
+Or connect via an external SSH client:
+
+```
+Host: locahost or 127.0.0.1
+User: vagrant
+Password: vagrant
+Key: .vagrant/machines/default/virtualbox/private_key
+```
+```bash
+ssh -i ./.vagrant/machines/default/virtualbox/private_key -p 2222 vagrant@127.0.0.1
+```
+
+---
+
+## ✅ Quick Verification (Smoke Test)
+
+After running `vagrant up`, verify your setup:
+
+1. Visit [http://localhost:8080](http://localhost:8080) → Apache2 Debian Default Page
+1. Visit [http://localhost:8080/piscoweb](http://localhost:8080/piscoweb) → Pisco Box index page
+1. Visit [http://localhost:8080/piscoweb/hello-world.php](http://localhost:8080/piscoweb/hello-world.php) → Pisco Box Hello World! 
+1. Visit [http://localhost:8080/info.php](http://localhost:8080/info.php) → PHP info
+1. Visit [http://localhost:8080/info-xdebug.php](http://localhost:8080/info-xdebug.php) → Xdebug info
+1. Run `piscobox mysql login` → connects to MariaDB  
+1. Run `piscobox site create` → creates and serves `http://mysite.local`  
+1. Inside VM: `php -v` → multiple PHP versions  
+1. Run `sudo php -m | grep xdebug` → Xdebug active  
+
+---
 
 ## 🧪 Demo & Verification
 
-PiscoBox includes a [Hello World](public_html/piscoweb/hello-world.php) view to quickly verify that the stack is working correctly.
+Pisco Box includes a [Hello World](http://localhost:8080/piscoweb/hello-world.php) view to verify:
 
-This demo page confirms:
+* Apache is running  
+* PHP configured correctly  
+* MariaDB connectivity works
 
-* Apache is running
-* PHP is properly configured
-* MySQL/MariaDB connectivity is working
+You can also test Xdebug at: [http://piscobox.local/info-xdebug.php](http://piscobox.local/info-xdebug.php)
 
-Additionally, the project includes helper commands to install or remove **PHP and MySQL demo applications** for testing and experimentation.
-
-You can also test Xdebug itself by visiting: [http://piscobox.local/test-xdebug.php](http://piscobox.local/test-xdebug.php)
-
-Or creating your own test file:
-```php
-<?php
-echo "Xdebug test\n";
-xdebug_info();
-```
-The page should display Xdebug version information for the PHP-FPM version in use.
-
+---
 
 # 🖥️ Piscobox CLI
 
-Piscobox includes a built-in CLI tool to simplify common tasks.
+Piscobox includes a built-in CLI to simplify common tasks.
 
 Usage:
-```text
+```bash
 piscobox [command] [options]
 ```
 
-### piscobox commands:
+### Commands
 
 | Command | Description | Flags / Notes |
-|----------|:------------:|---------------|
-| `site create` | Create a new VirtualHost and PHP site. Interactive mode prompts for site name, PHP version and document root. | — |
-| `site delete <site>` | Delete a VirtualHost and its configuration. Creates a backup of the `.conf`, disables the site (a2dissite), cleans multiphp aliases and removes the entry from `/vagrant/.piscobox-hosts`. | `--doc-root <path>` — override detected DocumentRoot from the vhost. <br>`--no-reload` — do not reload Apache. <br>`--force` — non-interactive: skip prompts and remove docroot automatically (subject to safety checks). <br>Interactive mode: prompts whether to delete the document root (default: Yes). <br>CLI protects against removing dangerous paths such as `/`, `/var`, `/var/www`, `/var/www/html`. |
-| `site set-php <site> <ver>` | Change the PHP-FPM version used by a site. Replaces the socket in `SetHandler` and updates multiphp alias configuration. | `--doc-root <path>` — override the document root used for aliases. <br>`--no-reload` — do not reload Apache. <br>`--force` — apply without prompting (non-interactive). |
-| `site available-cleanup <mode>` | Clean or purge Apache site backup files (`.conf.bak` / `.conf.timestamp`) in `/etc/apache2/sites-available`. | `<mode>` accepts:<br>• *(default)* or `-normal` — keep only the most recent backup per site.<br>• `--purge` — remove **all** residual backup and timestamp files.<br>Useful for maintaining a clean Apache configuration directory. |
-| `hosts-sync` | Display instructions to sync `/etc/hosts` on your host (uses `piscobox-sync-hosts.sh`). | — |
-| `install demo-php` | Install the included PHP demos. | — |
-| `uninstall demo-php` | Uninstall the PHP demos. | — |
-| `mysql login` | Direct access to MySQL as the `piscoboxuser` user. | — |
-| `help` | Show this help message. | — |
+|----------|-------------|---------------|
+| `site create` | Create a new VirtualHost and PHP site. | Interactive |
+| `site delete <site>` | Delete a VirtualHost (with safety checks and backups). | `--doc-root`, `--force`, `--no-reload` |
+| `site set-php <site> <ver>` | Change PHP-FPM version used by a site. | `--doc-root`, `--no-reload`, `--force` |
+| `site available-cleanup <mode>` | Clean `.conf.bak` files in `/etc/apache2/sites-available`. | `-normal`, `--purge` |
+| `hosts-sync` | Sync `/etc/hosts` on your host. | — |
+| `install demo-php` | Install included PHP demos. | — |
+| `uninstall demo-php` | Uninstall PHP demos. | — |
+| `mysql login` | Access MySQL as `piscoboxuser`. | — |
+| `help` | Show CLI help. | — |
 
-Behavior and safety
-- Before removing a `.conf`, the CLI always creates a timestamped backup (e.g. `mysite.conf.bak-YYYYMMDD-HHMMSS`).
-- For `site delete`:
-  - Interactive mode asks for confirmation to delete the site and then asks whether to delete the document root (default: `Y`).
-  - Non-interactive mode with `--force` skips prompts and will remove the document root automatically unless the path is considered dangerous.
-  - Dangerous/common system paths are preserved and deletion is refused with a warning: examples include `/`, `/var`, `/var/www`, `/var/www/html`.
-  - Removal of the multiphp block is performed by matching common generated patterns; if the automatic cleanup doesn't match, the CLI will inform the user to review the multiphp config manually.
-- For `site set-php`:
-  - A backup of the site `.conf` is created before modification.
-  - The command attempts to replace PHP-FPM socket references in the vhost and in the multiphp aliases configuration.
-  - Use `--doc-root` when the document root differs from the value in the vhost or when you want to explicitly control which multiphp alias block is updated.
+Behavior highlights:
+- Every `.conf` is backed up before modification.
+- Dangerous paths (`/`, `/var`, `/var/www`, etc.) are protected.
+- Backups named as `mysite.conf.bak-YYYYMMDD-HHMMSS`.
 
-
-  ## Examples
-
-  Below are complete examples demonstrating each command. Interactive commands show the expected prompts; non-interactive examples show common flags and behavior.
-
-  
-  ### help
-  ```bash
-  # Show CLI help
-  piscobox help
-  piscobox --help
-  piscobox -h
-  # or just
-  piscobox
-  ```
-
-  ### site create (interactive)
-  ```bash
-  # Create a new site interactively
-  piscobox site create
-
-  # Example interactive session (user input in <>):
-  # Enter site name (e.g. mysite): <mysite>
-  # Enter PHP version [8.3]: <8.1>
-  # Enter document root [/var/www/html/mysite]: </var/www/html/mysite>
-  # ...progress messages...
-  # ✓ Site created successfully!
-  # You can access your site at: http://mysite.local or http://192.168.56.110/mysite/
-  ```
-
-  ### site delete
-  ```bash
-  # Delete a site interactively (asks to confirm and whether to delete document root; default: Yes)
-  piscobox site delete
-
-  # Example interactive session:
-  # Enter site name (e.g. mysite): <mysite>
-  # Are you sure you want to delete this site? This will disable the site and remove its vhost. Proceed? [y/N]: <y>
-  # Delete document root '/var/www/html/mysite'? [Y/n]: <Y>
-  # ...backup and removal messages...
-  # ✓ Site mys ite deleted/unset locally.
-  # Reminder: run ./piscobox-sync-hosts.sh on your host to remove the mysite.local entry
-
-  # The simple way
-  piscobox site delete mysite
-
-  # Non-interactive: delete a site, explicitly specify doc root, force (no prompts), and skip Apache reload
-  piscobox site delete mysite --doc-root /var/www/html/mysite --force --no-reload
-  ```
-
-  ### site set-php
-  ```bash
-  # Change PHP version interactively (prompts if arguments missing)
-  piscobox site set-php
-
-  # Non-interactive: change mysite to PHP 8.1
-  piscobox site set-php mysite 8.1
-
-  # With explicit doc-root and without reloading Apache immediately
-  piscobox site set-php mysite 7.4 --doc-root /var/www/html/mysite --no-reload
-  ```
-
-  ### site available-cleanup
-  ```bash
-  # Clean old baks located in /etc/apache2/sites-available
-  piscobox site available-cleanup
-  # Or
-  piscobox site available-cleanup -normal
-
-  # Remove all residual backup and timestamp files in /etc/apache2/sites-available
-  piscobox site available-cleanup --purge
-  ```
-
-  ### hosts-sync
-  ```bash
-  # Display instructions to safely sync /etc/hosts on the host machine
-  piscobox hosts-sync
-
-  # Typical output instructs you to run the helper on the host:
-  # ./piscobox-sync-hosts.sh
-  ```
-
-  ### install demo-php
-  ```bash
-  # Install the bundled PHP demos (interactive confirmation expected)
-  piscobox install demo-php
-
-  # Example interactive session:
-  # Do you want to proceed with the installation? Y/n: <Y>
-  # ...installation steps...
-  # ✓ PHP demo unpacked and installed to /var/www/html/piscoweb/demos/
-  ```
-
-  ### uninstall demo-php
-  ```bash
-  # Uninstall the PHP demos (interactive confirmation expected)
-  piscobox uninstall demo-php
-
-  # Example interactive session:
-  # Are you sure you want to uninstall the PHP demos? [y/N]: <y>
-  # ...removal steps...
-  # ✓ Demos removed
-  ```
-
-  ### mysql login
-  ```bash
-  # Open a MySQL client as the piscobox user
-  piscobox mysql login
-
-  # Equivalent to:
-  # mysql -u piscoboxuser -pDevPassword123
-  ```
-
-> The README documents the availability of these commands; detailed usage is provided via the CLI itself.
+---
 
 ## 📁 Project Structure
 
 ```bash
 pisco-box/
-├── doc/            		# Documentation and collaboration
-├── extra_data/     		# Extra data, backups (not web accessible)
-├── provision/      		# Provisioning scripts
-├── public_html/    		# Document root (synchronized with /var/www/html)
-├── utils/          		# Workflow templates and utilities
-├── .piscobox-hosts 		# The VM hosts that should be synchronized with the host machine
+├── doc/                    
+├── extra_data/             
+├── provision/              
+├── public_html/            
+├── utils/                  
+├── .piscobox-hosts         
 ├── LICENSE
-├── piscobox-sync-hosts.sh	# Safely synchronizes local /etc/hosts with VM site entries
+├── piscobox-sync-hosts.sh  
 ├── README.md
 └── Vagrantfile
 ```
 
+---
+
 ## 🗄️ Database Configuration
 
-### Credentials:
+**Default credentials:**
 
-* User: `piscoboxuser`
-* Password: `DevPassword123`
-* Host: `localhost`
-* Database: `piscoboxdb`
+| Parameter | Value |
+|------------|--------|
+| User | `piscoboxuser` |
+| Password | `DevPassword123` |
+| Host | `localhost` |
+| Database | `piscoboxdb` |
 
-### Connection Examples
+### Examples
 
 Command Line:
 
 ```bash
-# As root
 sudo mysql
-
-# As database user
 mariadb -u piscoboxuser -p
 # Password: DevPassword123
 ```
 
-### PHP
-
+PHP:
 ```php
 $mysqli = new mysqli("localhost", "piscoboxuser", "DevPassword123", "piscoboxdb");
 ```
+
+---
 
 ## 🛠️ Technical Details
 
 ### PHP Configuration
 
-* Per-version PHP-FPM via Apache mod_proxy_fcgi
-* Multiple PHP versions available simultaneously
+* Per-version PHP-FPM (via mod_proxy_fcgi)
 * Default memory limit: 512MB
 * Upload limit: 100MB
-* Development settings: display errors enabled, E_ALL reporting
+* `display_errors` = On (development mode)
 
-Apache automatically uses the right PHP version for each project,  
-so you can run different PHP versions at the same time without conflicts.
+Apache automatically routes each site to its configured PHP-FPM version.
 
-### 🔍 Xdebug Configuration
+---
 
-* Installed and enabled for all PHP versions during provisioning
-* Automatically detects PHP version and applies proper Xdebug syntax:
-  * Xdebug 3+ → uses xdebug.mode, xdebug.client_host, xdebug.start_with_request
-  * Xdebug 2.x → uses xdebug.remote_enable, xdebug.remote_autostart, xdebug.remote_host
-* Configured for both CLI and FPM contexts
-* Example of generated configuration for PHP 8.3:
+### 🔍 Xdebug Configuration Example (PHP 8.3)
 
 ```ini
 zend_extension=xdebug.so
@@ -327,172 +259,144 @@ xdebug.log=/var/log/xdebug.log
 xdebug.log_level=7
 ```
 
-* Logs stored at /var/log/xdebug.log
-* Automatically restarts Apache and all PHP-FPM versions after installation
-* Verification step summarizes all detected versions:
-```bash
-✓ Xdebug 3 active: 7.4 8.0 8.3 8.4
-⚠ Legacy Xdebug detected: 5.6 7.0
-```
+---
 
-### Apache Modules
+### Apache Modules Enabled
 
-Enabled modules include:
+* proxy_fcgi  
+* setenvif  
+* rewrite  
+* headers  
+* expires  
+* include  
 
-* proxy_fcgi
-* setenvif
-* rewrite
-* headers
-* expires
-* include
+---
 
-### Useful Commands
-
-Service Management:
+### Service Management
 
 ```bash
 # Restart Apache
 sudo systemctl restart apache2
 
-# Restart a specific PHP-FPM version
+# Restart PHP-FPM (specific version)
 sudo systemctl restart php8.3-fpm
 
-# View Apache logs
+# View logs
 sudo tail -f /var/log/apache2/error.log
 sudo tail -f /var/log/apache2/piscobox-error.log
 ```
+
+---
 
 ## 🔧 Customization
 
 ### Configure Local Hostnames Manually
 
-To use `http://piscobox.local` instead of `http://localhost:8080` or `http://192.168.56.110`:
-
-**On macOS/Linux:**
-
+**macOS/Linux**
 ```bash
 sudo nano /etc/hosts
-# Add: 127.0.0.1 piscobox.local
+# Add:
+127.0.0.1 piscobox.local
 ```
 
-**On Windows:**
-
+**Windows**
 ```text
-# Open C:\Windows\System32\drivers\etc\hosts as Administrator
-# Add: 127.0.0.1 piscobox.local
+# Edit C:\Windows\System32\drivers\etc\hosts as Administrator
+127.0.0.1 piscobox.local
 ```
 
-> Note: PiscoBox includes a helper script and CLI command to assist with this process👇
+---
 
-### Configure Local Hostnames With CLI
+### Configure Hostnames With CLI
 
-Piscobox lets you create isolated PHP sites, each with its own domain (e.g. mysite.local) and PHP version.
-
-You can easily create one using the built-in CLI:
-
-```
-~$ piscobox site create
+```bash
+piscobox site create
 ```
 
-Follow the prompts to:
+Follow prompts:
+1. Site name → `mysite`
+2. PHP version → `8.3`
+3. Document root → `/var/www/html/mysite`
 
-1. Enter the site name — e.g. mysite
-1. Choose the PHP version (e.g. 8.3)
-1. Confirm the document root path (default: /var/www/html/mysite)
+Your site will be available at:
+* [http://mysite.local](http://mysite.local)  
+* or [http://192.168.56.110/mysite/](http://192.168.56.110/mysite/)
 
-After creation, the site will be available at: `http://mysite.local` (if you have created a `.local` host) <br>
-or directly via the VM IP: `http://192.168.56.110/mysite/` as it is commonly used.
+---
 
-### Sync Local Hostnames (macOS/Linux/Windows)
+### Sync Hostnames (macOS/Linux/Windows)
 
-To make the `.local` domains work from your host machine, add the mappings to your `/etc/hosts` file.
-
-Piscobox automatically keeps a list of all your site domains inside:
-
+Pisco Box tracks local domains in:
 ```
 vagrant/.piscobox-hosts
 ```
 
-You can safely sync these entries to your host by running (on your host machine, not inside the VM):
+To sync with your host:
+```bash
+./piscobox-sync-hosts.sh
 ```
-~$ piscobox-sync-hosts.sh
-```
-This command updates your system hosts file cleanly removing old Piscobox entries and adding the new ones without duplicates.
+
+This safely updates `/etc/hosts`, removing old entries and adding new ones.
+
+---
 
 ## 🐛 Troubleshooting (Quick Guide)
 
-**🧩 PHP not executing**  
-- Check PHP-FPM sockets:
+### 🧩 PHP not executing
 ```bash
-~$ ls /run/php/
+ls /run/php/
+sudo systemctl status php8.3-fpm
+sudo a2enmod proxy_fcgi && sudo systemctl reload apache2
 ```
-- Verify PHP-FPM service:
-```bash
-~$ sudo systemctl status php8.3-fpm
-```
-- Ensure `proxy_fcgi` is enabled:  
-```bash
-~$ sudo a2enmod proxy_fcgi && sudo systemctl reload apache2
-```
+
 ### 🗄️ Database connection issues
-
-Start MariaDB:
 ```bash
-~$ sudo systemctl status mariadb
-```
-Test:
-```bash
-# Default credentials: piscoboxuser / DevPassword123
-~$ mysql -u piscoboxuser -p
-
-# Using piscobox CLI
-~$ piscobox mysql login
+sudo systemctl status mariadb
+mysql -u piscoboxuser -p
+piscobox mysql login
 ```
 
 ### 🔄 Files not syncing
-
-- Reload Vagrant:
 ```bash
-~$ vagrant reload
-```
-
-- Check folder mapping in Vagrantfile
-
-- Fix permissions:
-```bash
-~$ sudo chown -R vagrant:vagrant /vagrants
+vagrant reload
+sudo chown -R vagrant:vagrant /vagrant
 ```
 
 ### 🌐 Local domain not resolving
-
-- Verify `.piscobox-hosts` entries
-
-- Run on host:
 ```bash
-# On PiscoBox directory
-~$ ./piscobox-sync-hosts.sh
+./piscobox-sync-hosts.sh
+# Then flush DNS cache if needed
 ```
 
-- (Optional) Flush DNS cache
+---
+
+## ⚠️ Security Notice
+
+Pisco Box is intended **only for local development**.  
+Do **not** expose this VM to the public internet or reuse included credentials in production environments.
+
+---
 
 ## 🤝 Contributing
 
-Found an issue or have a suggestion? Contributions are welcome.
+1. Fork the repository  
+2. Create a branch (`git checkout -b feature/AmazingFeature`)  
+3. Commit (`git commit -m 'Add some AmazingFeature'`)  
+4. Push (`git push origin feature/AmazingFeature`)  
+5. Open a Pull Request  
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+---
 
 ## 📄 License
 
-This project is licensed under the MIT License – see the LICENSE file for details.
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file.
+
+---
 
 ## 🙏 Acknowledgments
 
-* Built with ❤️ for the developer community
-* Thanks to all contributors and users
-* Current Version: 0.1.0
-* Maintainer: Philbone
+* Built with ❤️ for the developer community  
+* Thanks to all contributors and users  
+* Maintainer: Philbone  
+* Version: 0.2.0  
 * Repository: [https://github.com/philbone/piscobox](https://github.com/philbone/piscobox)
