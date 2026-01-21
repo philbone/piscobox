@@ -22,7 +22,7 @@
             Welcome to " . gethostname() . "<br>";
             echo $_SERVER['HTTP_USER_AGENT'] . "</p>";
             ?>
-            <span class="version">Current Version: 0.1.0</span>
+            <span class="version">Current Version: 0.2.0</span>
         </header>
 
         <div class="content">

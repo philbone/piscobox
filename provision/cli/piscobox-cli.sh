@@ -25,21 +25,23 @@ APACHE_IP="192.168.56.110"
 # ============================================================
 show_help() {
   cat <<EOF
-Piscobox CLI Utility
+Piscobox CLI Utility by Felipe M. <philbone@focused.cl>
 Usage:
   piscobox [command] [options]
 
 Available commands:
-  site create                 Create a new VirtualHost and PHP site
-  site delete <site>          Delete a VirtualHost and remove its configuration
-                              Flags: --doc-root <path> (override doc root), --no-reload (don't reload Apache), --force (no prompts, remove doc root)
-  site set-php <site> <ver>   Change the PHP-FPM version used by a site
-                              Flags: --no-reload (don't reload Apache), --force (apply despite warnings)
-  hosts-sync                  Display instructions to sync /etc/hosts on your host
-  install demo-php            Install the PHP demos
-  uninstall demo-php          Uninstall the PHP demos
-  mysql login                 Direct access to MySQL as the user "piscoboxuser"
-  help                        Show this help message
+  site create                   Create a new VirtualHost and PHP site
+  site delete <site>            Delete a VirtualHost and remove its configuration
+                                  Flags: --doc-root <path> (override doc root), --no-reload (don't reload Apache), --force (no prompts, remove doc root)
+  site set-php <site> <ver>     Change the PHP-FPM version used by a site
+                                  Flags: --no-reload (don't reload Apache), --force (apply despite warnings)
+  site available-cleanup <mode> Clean old baks located in /etc/apache2/sites-available
+                                  Flags: -normal (delete just olders), --purge (delete all .conf.bak files)
+  hosts-sync                    Display instructions to sync /etc/hosts on your host
+  install demo-php              Install the PHP demos
+  uninstall demo-php            Uninstall the PHP demos
+  mysql login                   Direct access to MySQL as the user "piscoboxuser"  
+  help                          Show this help message
 
 Examples:
   # Interactive
@@ -572,19 +574,28 @@ mysql_login() {
 cleanup_sites_available_bak() {
     local backup_dir="/etc/apache2/sites-available"
     local keep=2  # número de backups a conservar por sitio
+    local mode="${1:-normal}"  # modo por defecto: normal; alternativa: --purge
 
-    # Agrupamos por nombre base del sitio (antes del .conf.bak)
+    # 🔥 Modo purga: elimina todos los .bak y .timestamp
+    if [[ "$mode" == "--purge" ]]; then
+        echo "⚠️  Purging all residual backup files in $backup_dir..."
+        sudo find "$backup_dir" -type f \( -name "*.conf.bak*" -o -name "*.conf.timestamp" \) -exec rm -f {} +
+        echo "✅ Purge completed."
+        return 0
+    fi
+
+    # 🧹 Modo normal: conserva $keep backups por sitio
     for site in $(ls "$backup_dir"/*.conf.bak* 2>/dev/null | sed -E 's|.*/([^/]+)\.conf\.bak.*|\1|' | sort -u); do
-        # Listar los backups ordenados por fecha (más antiguos primero)
+        # Listar los backups ordenados por fecha (más recientes primero)
         backups=( $(ls -1t "$backup_dir/${site}.conf.bak"* 2>/dev/null) )
-        
+
         # Si hay más de $keep, eliminamos los antiguos
         if [ ${#backups[@]} -gt $keep ]; then
             old_backups=( "${backups[@]:$keep}" )
             echo "🧹 Cleaning sites-available configuration of $site..."
             sudo rm -f "${old_backups[@]}"
-          else
-            echo "There is nothing to clean"
+        else
+            echo "Nothing to clean for $site"
         fi
     done
 }
@@ -600,7 +611,7 @@ case "$COMMAND" in
       set-php) shift; site_set_php_version "$@" ;;
       set-php-version) shift; site_set_php_version "$@" ;;
       delete) shift; site_delete "$@" ;;
-      available-cleanup) cleanup_sites_available_bak ;;
+      available-cleanup) shift; cleanup_sites_available_bak "$@" ;;
       *) show_help ;;
     esac
     ;;
