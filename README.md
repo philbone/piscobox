@@ -7,6 +7,7 @@
 [![PHP Multi](https://img.shields.io/badge/PHP-Multi--Version-8892BF.svg)](https://www.php.net)
 [![MariaDB](https://img.shields.io/badge/MariaDB-latest-A26D37.svg)](https://mariadb.com/docs/release-notes)
 [![Composer 2.x](https://img.shields.io/badge/Composer-2.x-89552D.svg)](https://getcomposer.org)
+[![phpMyAdmin](https://img.shields.io/badge/phpMyAdmin-5.2.x-orange.svg)](https://www.phpmyadmin.net)
 
 > **Version:** 0.2.0  
 > **Repository:** [https://github.com/philbone/piscobox](https://github.com/philbone/piscobox)
@@ -39,6 +40,12 @@ Unlike generic LAMP boxes, **Pisco Box** provides:
   * Multiple PHP versions running simultaneously
   * Available versions: **8.4, 8.3, 8.0, 7.4, 7.0, 5.6**
 * **Database**: MariaDB Server & Client
+* **Database Management**:  
+  * **phpMyAdmin**:
+    * Version **5.2.x**
+    * Exposed via Apache Alias (`/phpmyadmin`)
+    * Configuration storage (pmadb) enabled
+    * Uses latest available PHP-FPM socket automatically
 * **Package Manager**: Composer 2.x
 * **Development Tools**: Git, Vim, Curl, Wget, and more
 * **Time Zone**: UTC, locale UTF-8
@@ -136,7 +143,9 @@ After running `vagrant up`, verify your setup:
 1. Visit [http://localhost:8080/piscoweb/hello-world.php](http://localhost:8080/piscoweb/hello-world.php) → Pisco Box Hello World! 
 1. Visit [http://localhost:8080/info.php](http://localhost:8080/info.php) → PHP info
 1. Visit [http://localhost:8080/info-xdebug.php](http://localhost:8080/info-xdebug.php) → Xdebug info
-1. Run `piscobox mysql login` → connects to MariaDB  
+1. Visit [http://localhost:8080/phpmyadmin](http://localhost:8080/phpmyadmin) → phpMyAdmin dashboard
+1. Run `piscobox mysql login` → connects to MariaDB as `piscoboxuser`
+1. Run `sudo mysql` → connects to MariaDB as `root`
 1. Run `piscobox site create` → creates and serves `http://mysite.local`  
 1. Inside VM: `php -v` → multiple PHP versions  
 1. Run `sudo php -m | grep xdebug` → Xdebug active  
@@ -213,6 +222,11 @@ pisco-box/
 | Password | `DevPassword123` |
 | Host | `localhost` |
 | Database | `piscoboxdb` |
+
+> 💡 **phpMyAdmin** is available at  
+> [http://localhost:8080/phpmyadmin](http://localhost:8080/phpmyadmin)  
+>  
+> Database creation and administrative tasks are intentionally handled via the `piscobox` CLI.
 
 ### Examples
 
