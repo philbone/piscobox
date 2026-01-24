@@ -8,15 +8,16 @@
 [![MariaDB](https://img.shields.io/badge/MariaDB-latest-A26D37.svg)](https://mariadb.com/docs/release-notes)
 [![Composer 2.x](https://img.shields.io/badge/Composer-2.x-89552D.svg)](https://getcomposer.org)
 [![phpMyAdmin](https://img.shields.io/badge/phpMyAdmin-5.2.x-orange.svg)](https://www.phpmyadmin.net)
+[![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-blue.svg)](https://www.postgresql.org)
 
-> **Version:** 0.2.0  
+> **Version:** 0.3.0  
 > **Repository:** [https://github.com/philbone/piscobox](https://github.com/philbone/piscobox)
 
 ---
 
 **A modern LAMP stack for web developers based on Debian Bookworm**
 
-Pisco Box is a ready-to-use Vagrant box built on Debian, providing a complete LAMP development environment with Apache, multiple PHP versions, MariaDB, and essential tools for modern web development.
+Pisco Box is a ready-to-use Vagrant box built on Debian, providing a complete LAMP development environment with Apache, multiple PHP versions, MariaDB, PostgreSQL and essential tools for modern web development.
 
 ---
 
@@ -39,7 +40,9 @@ Unlike generic LAMP boxes, **Pisco Box** provides:
 * **PHP (Multi-Version Support)**:
   * Multiple PHP versions running simultaneously
   * Available versions: **8.4, 8.3, 8.0, 7.4, 7.0, 5.6**
-* **Database**: MariaDB Server & Client
+* **Database**:
+  * MariaDB Server & Client
+  * PostgreSQL 16
 * **Database Management**:  
   * **phpMyAdmin**:
     * Version **5.2.x**
@@ -214,14 +217,15 @@ pisco-box/
 
 ## 🗄️ Database Configuration
 
+### MariaDB (MySQL)
 **Default credentials:**
 
-| Parameter | Value |
-|------------|--------|
-| User | `piscoboxuser` |
-| Password | `DevPassword123` |
-| Host | `localhost` |
-| Database | `piscoboxdb` |
+| Parameter | Value           |
+|-----------|-----------------|
+| User      | `piscoboxuser`  |
+| Password  | `DevPassword123`|
+| Database  | `piscoboxdb`    |
+| Host      | `localhost`     |
 
 > 💡 **phpMyAdmin** is available at  
 > [http://localhost:8080/phpmyadmin](http://localhost:8080/phpmyadmin)  
@@ -242,6 +246,28 @@ PHP:
 ```php
 $mysqli = new mysqli("localhost", "piscoboxuser", "DevPassword123", "piscoboxdb");
 ```
+
+### PostgreSQL 16
+PostgreSQL does **not** use a `root` user. Administrative access is provided by the `postgres` role.
+
+**Default credentials:**
+
+| Parameter | Value           |
+|-----------|-----------------|
+| User      | `piscoboxuser`  |
+| Password  | `DevPassword123`|
+| Database  | `piscoboxdb`    |
+| Host      | `localhost`     |
+
+Administrative access (superuser):
+```bash
+$ sudo -u postgres psql
+```
+Development access:
+```bash
+$ psql -U piscoboxuser -d piscoboxdb
+```
+These commands provide sufficient access for users familiar with PostgreSQL. Additional management commands will be added to the piscobox CLI in future releases.
 
 ---
 

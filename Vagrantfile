@@ -43,6 +43,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", path: "provision/scripts/php.sh"
   config.vm.provision "shell", path: "provision/scripts/database.sh"
   config.vm.provision "shell", path: "provision/scripts/phpmyadmin.sh" 
+  config.vm.provision "shell", path: "provision/scripts/postgresql.sh"
   config.vm.provision "shell", path: "provision/scripts/xdebug.sh"  
 
   # ============================================================================
