@@ -1,3 +1,4 @@
+
 # Pisco Box 🥂
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](LICENSE)
@@ -6,17 +7,19 @@
 [![Apache 2.4](https://img.shields.io/badge/Apache-2.4-A64D79.svg)](https://httpd.apache.org/docs/2.4/new_features_2_4.html)
 [![PHP Multi](https://img.shields.io/badge/PHP-Multi--Version-8892BF.svg)](https://www.php.net)
 [![MariaDB](https://img.shields.io/badge/MariaDB-latest-A26D37.svg)](https://mariadb.com/docs/release-notes)
-[![Composer 2.x](https://img.shields.io/badge/Composer-2.x-89552D.svg)](https://getcomposer.org)
+[![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-blue.svg)](https://www.postgresql.org)
 [![phpMyAdmin](https://img.shields.io/badge/phpMyAdmin-5.2.x-orange.svg)](https://www.phpmyadmin.net)
+[![pgAdmin](https://img.shields.io/badge/pgAdmin-4-blue.svg)](https://www.pgadmin.org)
+[![Composer 2.x](https://img.shields.io/badge/Composer-2.x-89552D.svg)](https://getcomposer.org)
 
-> **Version:** 0.2.0  
-> **Repository:** [https://github.com/philbone/piscobox](https://github.com/philbone/piscobox)
+> **Version:** 0.3.0  
+> **Repository:** https://github.com/philbone/piscobox
 
 ---
 
 **A modern LAMP stack for web developers based on Debian Bookworm**
 
-Pisco Box is a ready-to-use Vagrant box built on Debian, providing a complete LAMP development environment with Apache, multiple PHP versions, MariaDB, and essential tools for modern web development.
+Pisco Box is a ready-to-use Vagrant box built on Debian, providing a complete LAMP development environment with Apache, multiple PHP versions, MariaDB, PostgreSQL and essential tools for modern web development.
 
 ---
 
@@ -24,44 +27,27 @@ Pisco Box is a ready-to-use Vagrant box built on Debian, providing a complete LA
 
 Unlike generic LAMP boxes, **Pisco Box** provides:
 
-* Native **multi-PHP** support (no version switching hacks)
-* Automated **VirtualHost + domain management**
-* Full **Xdebug 3** integration for all PHP versions
-* A clean, safe, developer-friendly **CLI**
-* Built-in **safety checks and backups** for site operations
+- Native **multi-PHP** support
+- Automated **VirtualHost + domain management**
+- Full **Xdebug 3** integration
+- Safe, developer-friendly **CLI**
+- Built-in **backups and safety checks**
 
 ---
 
 ## ✨ Features
 
-* **Operating System**: Debian Bookworm 64-bit
-* **Web Server**: Apache 2.4 with PHP-FPM integration
-* **PHP (Multi-Version Support)**:
-  * Multiple PHP versions running simultaneously
-  * Available versions: **8.4, 8.3, 8.0, 7.4, 7.0, 5.6**
-* **Database**: MariaDB Server & Client
-* **Database Management**:  
-  * **phpMyAdmin**:
-    * Version **5.2.x**
-    * Exposed via Apache Alias (`/phpmyadmin`)
-    * Configuration storage (pmadb) enabled
-    * Uses latest available PHP-FPM socket automatically
-* **Package Manager**: Composer 2.x
-* **Development Tools**: Git, Vim, Curl, Wget, and more
-* **Time Zone**: UTC, locale UTF-8
-* **Synchronized Directories**: Seamless host ↔ VM file sharing
-* **Local Domains Assistant**: Automates `/etc/hosts` updates
-* **CLI Tool (`piscobox`)**: Simplifies common development tasks
+- Debian Bookworm 64-bit
+- Apache 2.4 + PHP-FPM
+- PHP: 8.4, 8.3, 8.0, 7.4, 7.0, 5.6
+- MariaDB & PostgreSQL 16
+- Development Tools: Git, Vim, Curl, Wget, and more
+- Time Zone: UTC, locale UTF-8
+- Synchronized Directories: Seamless host ↔ VM file sharing
+- Local Domains Assistant: Automates `/etc/hosts` updates
+- CLI Tool (`piscobox`): Simplifies common development tasks
 
----
-
-## 🧠 Requirements
-
-**Host system:**
-* OS: Linux / macOS / Windows 10+
-* RAM: 2 GB minimum (4 GB recommended)
-* CPU: Dual-core or higher
-* Disk space: ~3 GB (base box + synced folders)
+### Database Management
 
 **Dependencies:**
 * [Vagrant 2.2+](https://www.vagrantup.com/downloads)
@@ -84,8 +70,6 @@ Unlike generic LAMP boxes, **Pisco Box** provides:
 ---
 
 ## 🚀 Quick Start
-
-### Installation
 
 ```bash
 git clone https://github.com/philbone/piscobox.git
@@ -144,6 +128,7 @@ After running `vagrant up`, verify your setup:
 1. Visit [http://localhost:8080/info.php](http://localhost:8080/info.php) → PHP info
 1. Visit [http://localhost:8080/info-xdebug.php](http://localhost:8080/info-xdebug.php) → Xdebug info
 1. Visit [http://localhost:8080/phpmyadmin](http://localhost:8080/phpmyadmin) → phpMyAdmin dashboard
+1. Visit [http://localhost:8080/pgadmin4](http://localhost:8080/pgadmin4) → postgresql dashboard
 1. Run `piscobox mysql login` → connects to MariaDB as `piscoboxuser`
 1. Run `sudo mysql` → connects to MariaDB as `root`
 1. Run `piscobox site create` → creates and serves `http://mysite.local`  
@@ -214,14 +199,15 @@ pisco-box/
 
 ## 🗄️ Database Configuration
 
+### MariaDB (MySQL)
 **Default credentials:**
 
-| Parameter | Value |
-|------------|--------|
-| User | `piscoboxuser` |
-| Password | `DevPassword123` |
-| Host | `localhost` |
-| Database | `piscoboxdb` |
+| Parameter | Value           |
+|-----------|-----------------|
+| User      | `piscoboxuser`  |
+| Password  | `DevPassword123`|
+| Database  | `piscoboxdb`    |
+| Host      | `localhost`     |
 
 > 💡 **phpMyAdmin** is available at  
 > [http://localhost:8080/phpmyadmin](http://localhost:8080/phpmyadmin)  
@@ -242,6 +228,28 @@ PHP:
 ```php
 $mysqli = new mysqli("localhost", "piscoboxuser", "DevPassword123", "piscoboxdb");
 ```
+
+### PostgreSQL 16
+PostgreSQL does **not** use a `root` user. Administrative access is provided by the `postgres` role.
+
+**Default credentials:**
+
+| Parameter | Value           |
+|-----------|-----------------|
+| User      | `piscoboxuser`  |
+| Password  | `DevPassword123`|
+| Database  | `piscoboxdb`    |
+| Host      | `localhost`     |
+
+Administrative access (superuser):
+```bash
+$ sudo -u postgres psql
+```
+Development access:
+```bash
+$ psql -U piscoboxuser -d piscoboxdb
+```
+These commands provide sufficient access for users familiar with PostgreSQL. Additional management commands will be added to the piscobox CLI in future releases.
 
 ---
 
@@ -386,31 +394,10 @@ sudo chown -R vagrant:vagrant /vagrant
 
 ## ⚠️ Security Notice
 
-Pisco Box is intended **only for local development**.  
-Do **not** expose this VM to the public internet or reuse included credentials in production environments.
-
----
-
-## 🤝 Contributing
-
-1. Fork the repository  
-2. Create a branch (`git checkout -b feature/AmazingFeature`)  
-3. Commit (`git commit -m 'Add some AmazingFeature'`)  
-4. Push (`git push origin feature/AmazingFeature`)  
-5. Open a Pull Request  
+Local development only. Do not use in production.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file.
-
----
-
-## 🙏 Acknowledgments
-
-* Built with ❤️ for the developer community  
-* Thanks to all contributors and users  
-* Maintainer: Philbone  
-* Version: 0.2.0  
-* Repository: [https://github.com/philbone/piscobox](https://github.com/philbone/piscobox)
+MIT License
