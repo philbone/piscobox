@@ -1,4 +1,3 @@
-
 # Pisco Box 🥂
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-red.svg)](LICENSE)
@@ -8,6 +7,7 @@
 [![PHP Multi](https://img.shields.io/badge/PHP-Multi--Version-8892BF.svg)](https://www.php.net)
 [![MariaDB](https://img.shields.io/badge/MariaDB-latest-A26D37.svg)](https://mariadb.com/docs/release-notes)
 [![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-blue.svg)](https://www.postgresql.org)
+[![Redis 7.2+](https://img.shields.io/badge/Redis-7.2+-DC382D.svg)](https://redis.io)
 [![phpMyAdmin](https://img.shields.io/badge/phpMyAdmin-5.2.x-orange.svg)](https://www.phpmyadmin.net)
 [![pgAdmin](https://img.shields.io/badge/pgAdmin-4-blue.svg)](https://www.pgadmin.org)
 [![Composer 2.x](https://img.shields.io/badge/Composer-2.x-89552D.svg)](https://getcomposer.org)
@@ -19,7 +19,7 @@
 
 **A modern LAMP stack for web developers based on Debian Bookworm**
 
-Pisco Box is a ready-to-use Vagrant box built on Debian, providing a complete LAMP development environment with Apache, multiple PHP versions, MariaDB, PostgreSQL and essential tools for modern web development.
+Pisco Box is a ready-to-use Vagrant box built on Debian, providing a complete LAMP development environment with Apache, multiple PHP versions, MariaDB, PostgreSQL, Redis and essential tools for modern web development.
 
 ---
 
@@ -40,14 +40,13 @@ Unlike generic LAMP boxes, **Pisco Box** provides:
 - Debian Bookworm 64-bit
 - Apache 2.4 + PHP-FPM
 - PHP: 8.4, 8.3, 8.0, 7.4, 7.0, 5.6
-- MariaDB & PostgreSQL 16
+- MariaDB, PostgreSQL 16 and Redis 7.2+
+- Database Management: phpMyAdmin and pgAdim
 - Development Tools: Git, Vim, Curl, Wget, and more
 - Time Zone: UTC, locale UTF-8
 - Synchronized Directories: Seamless host ↔ VM file sharing
 - Local Domains Assistant: Automates `/etc/hosts` updates
 - CLI Tool (`piscobox`): Simplifies common development tasks
-
-### Database Management
 
 **Dependencies:**
 * [Vagrant 2.2+](https://www.vagrantup.com/downloads)
@@ -251,6 +250,24 @@ $ psql -U piscoboxuser -d piscoboxdb
 ```
 These commands provide sufficient access for users familiar with PostgreSQL. Additional management commands will be added to the piscobox CLI in future releases.
 
+### Redis 7.2+
+Redis is installed from the official Redis repository and enabled by default.
+
+**Default configuration:**
+
+| Parameter       | Value                       |
+| --------------- | --------------------------- |
+| Host            | `127.0.0.1`                 |
+| Port            | `6379`                      |
+| Auth            | Disabled (development only) |
+| Max memory      | `256mb`                     |
+| Eviction policy | `allkeys-lru`               |
+
+Test Redis:
+```bash
+$ redis-cli
+PING
+```
 ---
 
 ## 🛠️ Technical Details
@@ -312,23 +329,6 @@ sudo tail -f /var/log/apache2/piscobox-error.log
 
 ## 🔧 Customization
 
-### Configure Local Hostnames Manually
-
-**macOS/Linux**
-```bash
-sudo nano /etc/hosts
-# Add:
-127.0.0.1 piscobox.local
-```
-
-**Windows**
-```text
-# Edit C:\Windows\System32\drivers\etc\hosts as Administrator
-127.0.0.1 piscobox.local
-```
-
----
-
 ### Configure Hostnames With CLI
 
 ```bash
@@ -361,6 +361,24 @@ To sync with your host:
 This safely updates `/etc/hosts`, removing old entries and adding new ones.
 
 ---
+
+### Or, Configure Local Hostnames Manually
+
+**macOS/Linux**
+```bash
+sudo nano /etc/hosts
+# Add:
+127.0.0.1 piscobox.local
+```
+
+**Windows**
+```text
+# Edit C:\Windows\System32\drivers\etc\hosts as Administrator
+127.0.0.1 piscobox.local
+```
+
+---
+
 
 ## 🐛 Troubleshooting (Quick Guide)
 
