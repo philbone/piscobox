@@ -10,6 +10,7 @@
 [![Redis 7.2+](https://img.shields.io/badge/Redis-7.2+-DC382D.svg)](https://redis.io)
 [![phpMyAdmin](https://img.shields.io/badge/phpMyAdmin-5.2.x-orange.svg)](https://www.phpmyadmin.net)
 [![pgAdmin](https://img.shields.io/badge/pgAdmin-4-blue.svg)](https://www.pgadmin.org)
+[![Redis Commander](https://img.shields.io/badge/Redis%20Commander-0.9.x-D82C20.svg)](https://github.com/joeferner/redis-commander)
 [![Composer 2.x](https://img.shields.io/badge/Composer-2.x-89552D.svg)](https://getcomposer.org)
 
 > **Version:** 0.3.0  
@@ -41,7 +42,7 @@ Unlike generic LAMP boxes, **Pisco Box** provides:
 - Apache 2.4 + PHP-FPM
 - PHP: 8.4, 8.3, 8.0, 7.4, 7.0, 5.6
 - MariaDB, PostgreSQL 16 and Redis 7.2+
-- Database Management: phpMyAdmin and pgAdim
+- Database Management: phpMyAdmin, pgAdmin and Redis Commander
 - Development Tools: Git, Vim, Curl, Wget, and more
 - Time Zone: UTC, locale UTF-8
 - Synchronized Directories: Seamless host ↔ VM file sharing
@@ -128,6 +129,7 @@ After running `vagrant up`, verify your setup:
 1. Visit [http://localhost:8080/info-xdebug.php](http://localhost:8080/info-xdebug.php) → Xdebug info
 1. Visit [http://localhost:8080/phpmyadmin](http://localhost:8080/phpmyadmin) → phpMyAdmin dashboard
 1. Visit [http://localhost:8080/pgadmin4](http://localhost:8080/pgadmin4) → postgresql dashboard
+1. Visit [http://localhost:8080/redis](http://localhost:8080/redis) → Redis Commander dashboard
 1. Run `piscobox mysql login` → connects to MariaDB as `piscoboxuser`
 1. Run `sudo mysql` → connects to MariaDB as `root`
 1. Run `piscobox site create` → creates and serves `http://mysite.local`  
@@ -270,6 +272,20 @@ PING
 ```
 ---
 
+### Redis Commander
+
+Redis Commander is included as a web-based management UI for Redis.
+
+**Access:**
+- http://localhost:8080/redis
+
+**Notes:**
+- Redis Commander runs locally and is exposed via Apache reverse proxy.
+- During provisioning, npm may emit deprecation warnings related to upstream dependencies.
+  These warnings are expected and safe to ignore in the context of local development.
+
+---
+
 ## 🛠️ Technical Details
 
 ### PHP Configuration
@@ -376,9 +392,7 @@ sudo nano /etc/hosts
 # Edit C:\Windows\System32\drivers\etc\hosts as Administrator
 127.0.0.1 piscobox.local
 ```
-
 ---
-
 
 ## 🐛 Troubleshooting (Quick Guide)
 
@@ -406,6 +420,14 @@ sudo chown -R vagrant:vagrant /vagrant
 ```bash
 ./piscobox-sync-hosts.sh
 # Then flush DNS cache if needed
+```
+
+### 🔴 Redis Commander not loading
+
+```bash
+sudo systemctl status redis-commander
+sudo systemctl restart redis-commander
+sudo systemctl reload apache2
 ```
 
 ---

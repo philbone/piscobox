@@ -47,6 +47,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", path: "provision/scripts/pgadmin.sh"
   config.vm.provision "shell", path: "provision/scripts/xdebug.sh"
   config.vm.provision "shell", path: "provision/scripts/redis.sh"
+  config.vm.provision "shell", path: "provision/scripts/redis-commander.sh"
 
   # ============================================================================
   # POST-INSTALLATION MESSAGE
