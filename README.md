@@ -8,6 +8,7 @@
 [![MariaDB](https://img.shields.io/badge/MariaDB-latest-A26D37.svg)](https://mariadb.com/docs/release-notes)
 [![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-blue.svg)](https://www.postgresql.org)
 [![Redis 7.2+](https://img.shields.io/badge/Redis-7.2+-DC382D.svg)](https://redis.io)
+[![Memcached 1.6+](https://img.shields.io/badge/Memcached-1.6+-blue.svg)](https://memcached.org)
 [![phpMyAdmin](https://img.shields.io/badge/phpMyAdmin-5.2.x-orange.svg)](https://www.phpmyadmin.net)
 [![pgAdmin](https://img.shields.io/badge/pgAdmin-4-blue.svg)](https://www.pgadmin.org)
 [![Redis Commander](https://img.shields.io/badge/Redis%20Commander-0.9.x-D82C20.svg)](https://github.com/joeferner/redis-commander)
@@ -41,7 +42,7 @@ Unlike generic LAMP boxes, **Pisco Box** provides:
 - Debian Bookworm 64-bit
 - Apache 2.4 + PHP-FPM
 - PHP: 8.4, 8.3, 8.0, 7.4, 7.0, 5.6
-- MariaDB, PostgreSQL 16 and Redis 7.2+
+- MariaDB, PostgreSQL 16, Redis 7.2+ and Memcached 1.6+
 - Database Management: phpMyAdmin, pgAdmin and Redis Commander
 - Development Tools: Git, Vim, Curl, Wget, and more
 - Time Zone: UTC, locale UTF-8
@@ -284,6 +285,40 @@ Redis Commander is included as a web-based management UI for Redis.
 - During provisioning, npm may emit deprecation warnings related to upstream dependencies.
   These warnings are expected and safe to ignore in the context of local development.
 
+---
+
+### Memcached 1.6+
+
+Memcached is installed and enabled by default for local development.
+
+**Default configuration:**
+
+| Parameter | Value |
+|----------|------|
+| Host     | `127.0.0.1` |
+| Port     | `11211` |
+| Memory   | `128 MB` |
+| Auth     | Disabled (development only) |
+
+#### Test Memcached (CLI)
+
+```bash
+echo stats | nc 127.0.0.1 11211
+```
+
+### Test Memcached (PHP)
+
+> Memcached is provided via the native PHP extension (php-memcached).
+> No Composer dependency is required.
+
+```bash
+$ php -dxdebug.mode=off -r '
+$m = new Memcached();
+$m->addServer("127.0.0.1", 11211);
+$m->set("ping", "pong");
+echo $m->get("ping") . PHP_EOL;
+'
+```
 ---
 
 ## 🛠️ Technical Details
