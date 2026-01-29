@@ -20,7 +20,7 @@ Vagrant.configure("2") do |config|
   # ============================================================================
   config.vm.synced_folder "./public_html", "/var/www/html",
     owner: "www-data", group: "www-data",
-    mount_options: ["dmode=755", "fmode=644"]
+    mount_options: ["dmode=775", "fmode=664"]
 
   config.vm.synced_folder "./extra_data", "/var/extra_data",
     owner: "www-data", group: "www-data",
@@ -50,6 +50,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", path: "provision/scripts/redis-commander.sh"
   config.vm.provision "shell", path: "provision/scripts/memcached.sh"
   config.vm.provision "shell", path: "provision/scripts/phpmemcachedadmin.sh"
+  config.vm.provision "shell", path: "provision/scripts/beanstalkd.sh"
 
   # ============================================================================
   # POST-INSTALLATION MESSAGE

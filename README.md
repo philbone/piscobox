@@ -8,6 +8,7 @@
 [![MariaDB](https://img.shields.io/badge/MariaDB-latest-A26D37.svg)](https://mariadb.com/docs/release-notes)
 [![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-blue.svg)](https://www.postgresql.org)
 [![Redis 7.2+](https://img.shields.io/badge/Redis-7.2+-DC382D.svg)](https://redis.io)
+[![Beanstalkd](https://img.shields.io/badge/Beanstalkd-enabled-6C8EBF.svg)](https://beanstalkd.github.io/)
 [![Memcached 1.6+](https://img.shields.io/badge/Memcached-1.6+-blue.svg)](https://memcached.org)
 [![phpMyAdmin](https://img.shields.io/badge/phpMyAdmin-5.2.x-orange.svg)](https://www.phpmyadmin.net)
 [![pgAdmin](https://img.shields.io/badge/pgAdmin-4-blue.svg)](https://www.pgadmin.org)
@@ -45,7 +46,7 @@ Unlike generic LAMP boxes, **Pisco Box** provides:
 - Apache 2.4 + PHP-FPM
 - PHP: 8.4, 8.3, 8.0, 7.4, 7.0, 5.6
 - MariaDB, PostgreSQL 16, Redis 7.2+ and Memcached 1.6+
-- Database & Cache Management: phpMyAdmin, pgAdmin, Redis Commander and phpMemcachedAdmin
+- Database & Cache Management: phpMyAdmin, pgAdmin, Redis Commander, phpMemcachedAdmin and Beanstalkd
 - Development Tools: Git, Vim, Curl, Wget, and more
 - Node.js 18.x (npm included)
 - Time Zone: UTC, locale UTF-8
@@ -142,6 +143,41 @@ After running `vagrant up`, verify your setup:
 1. Run `piscobox site create` → creates and serves `http://mysite.local`  
 1. Inside VM: `php -v` → multiple PHP versions  
 1. Run `sudo php -m | grep xdebug` → Xdebug active  
+
+#### Pheanstalk Quick test with PHP
+
+In a public directory such as `/var/www/html/test`, install the client library using Composer.
+
+```bash
+$ composer require pda/pheanstalk
+```
+
+Then create a php file like `pheanstalk-test.php` and paste this code inside:
+```php
+<?php
+
+require __DIR__ . '/vendor/autoload.php';
+
+use Pheanstalk\Pheanstalk;
+
+$queue = Pheanstalk::create('127.0.0.1');
+
+$queue->put('Hello Pisco Box!');
+$job = $queue->reserve();
+
+echo $job->getData();
+
+$queue->delete($job);
+
+```
+
+Finally, try: [http://localhost:8080/test/pheanstalk-test.php](http://localhost:8080/test/pheanstalk-test.php)
+
+**Expected output:**
+
+> Hello Pisco Box!
+
+
 
 ---
 
@@ -290,6 +326,22 @@ Redis Commander is included as a web-based management UI for Redis.
 - Redis Commander runs locally and is exposed via Apache reverse proxy.
 - During provisioning, npm may emit deprecation warnings related to upstream dependencies.
   These warnings are expected and safe to ignore in the context of local development.
+
+---
+
+### Beanstalkd
+
+Beanstalkd is included as a lightweight job queue system, ideal for background tasks and workers during development.
+
+**Default configuration:**
+
+| Parameter | Value        |
+|----------|--------------|
+| Host     | `127.0.0.1`  |
+| Port     | `11300`      |
+| Auth     | Not required |
+
+The service is enabled by default and starts automatically with the VM.
 
 ---
 
