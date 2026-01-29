@@ -49,6 +49,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", path: "provision/scripts/redis.sh"
   config.vm.provision "shell", path: "provision/scripts/redis-commander.sh"
   config.vm.provision "shell", path: "provision/scripts/memcached.sh"
+  config.vm.provision "shell", path: "provision/scripts/phpmemcachedadmin.sh"
 
   # ============================================================================
   # POST-INSTALLATION MESSAGE
