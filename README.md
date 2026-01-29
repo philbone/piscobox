@@ -12,7 +12,9 @@
 [![phpMyAdmin](https://img.shields.io/badge/phpMyAdmin-5.2.x-orange.svg)](https://www.phpmyadmin.net)
 [![pgAdmin](https://img.shields.io/badge/pgAdmin-4-blue.svg)](https://www.pgadmin.org)
 [![Redis Commander](https://img.shields.io/badge/Redis%20Commander-0.9.x-D82C20.svg)](https://github.com/joeferner/redis-commander)
+[![phpMemcachedAdmin](https://img.shields.io/badge/phpMemcachedAdmin-latest-blue.svg)](https://github.com/elijaa/phpmemcachedadmin)
 [![Composer 2.x](https://img.shields.io/badge/Composer-2.x-89552D.svg)](https://getcomposer.org)
+[![Node.js](https://img.shields.io/badge/Node.js-18.x-339933.svg)](https://nodejs.org)
 
 > **Version:** 0.3.0  
 > **Repository:** https://github.com/philbone/piscobox
@@ -43,8 +45,9 @@ Unlike generic LAMP boxes, **Pisco Box** provides:
 - Apache 2.4 + PHP-FPM
 - PHP: 8.4, 8.3, 8.0, 7.4, 7.0, 5.6
 - MariaDB, PostgreSQL 16, Redis 7.2+ and Memcached 1.6+
-- Database Management: phpMyAdmin, pgAdmin and Redis Commander
+- Database & Cache Management: phpMyAdmin, pgAdmin, Redis Commander and phpMemcachedAdmin
 - Development Tools: Git, Vim, Curl, Wget, and more
+- Node.js 18.x (npm included)
 - Time Zone: UTC, locale UTF-8
 - Synchronized Directories: Seamless host ↔ VM file sharing
 - Local Domains Assistant: Automates `/etc/hosts` updates
@@ -131,6 +134,9 @@ After running `vagrant up`, verify your setup:
 1. Visit [http://localhost:8080/phpmyadmin](http://localhost:8080/phpmyadmin) → phpMyAdmin dashboard
 1. Visit [http://localhost:8080/pgadmin4](http://localhost:8080/pgadmin4) → postgresql dashboard
 1. Visit [http://localhost:8080/redis](http://localhost:8080/redis) → Redis Commander dashboard
+1. Visit [http://localhost:8080/memcached](http://localhost:8080/memcached) → phpMemcachedAdmin dashboard
+1. Run `node -v` → Node.js installed
+1. Run `npm -v` → npm available
 1. Run `piscobox mysql login` → connects to MariaDB as `piscoboxuser`
 1. Run `sudo mysql` → connects to MariaDB as `root`
 1. Run `piscobox site create` → creates and serves `http://mysite.local`  
@@ -321,6 +327,36 @@ echo $m->get("ping") . PHP_EOL;
 ```
 ---
 
+### phpMemcachedAdmin
+
+phpMemcachedAdmin is included as a lightweight web-based UI for Memcached.
+
+**Access:**
+- http://localhost:8080/memcached
+
+**Notes:**
+- Connected to Memcached at `127.0.0.1:11211`
+- PHP-FPM socket is auto-detected
+- PHP 8.x deprecation warnings are suppressed for a clean UI
+
+---
+
+### Node.js 18.x
+
+Node.js is installed system-wide to support modern frontend and tooling workflows.
+
+**Included:**
+- Node.js 18.x
+- npm (bundled)
+
+**Examples:**
+```bash
+node -v
+npm -v
+```
+
+---
+
 ## 🛠️ Technical Details
 
 ### PHP Configuration
@@ -374,6 +410,10 @@ sudo systemctl restart php8.3-fpm
 # View logs
 sudo tail -f /var/log/apache2/error.log
 sudo tail -f /var/log/apache2/piscobox-error.log
+
+
+# Restart Memcached
+sudo systemctl restart memcached
 ```
 
 ---
