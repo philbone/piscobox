@@ -149,11 +149,15 @@ After running `vagrant up`, verify your setup:
 In a public directory such as `/var/www/html/test`, install the client library using Composer.
 
 ```bash
-composer require pda/pheanstalk
+$ composer require pda/pheanstalk
 ```
 
 Then create a php file like `pheanstalk-test.php` and paste this code inside:
 ```php
+<?php
+
+require __DIR__ . '/vendor/autoload.php';
+
 use Pheanstalk\Pheanstalk;
 
 $queue = Pheanstalk::create('127.0.0.1');
