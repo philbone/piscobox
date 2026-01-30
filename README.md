@@ -8,6 +8,7 @@
 [![MariaDB](https://img.shields.io/badge/MariaDB-latest-A26D37.svg)](https://mariadb.com/docs/release-notes)
 [![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-blue.svg)](https://www.postgresql.org)
 [![Redis 7.2+](https://img.shields.io/badge/Redis-7.2+-DC382D.svg)](https://redis.io)
+[![SQLite](https://img.shields.io/badge/SQLite-3-blue.svg)](https://www.sqlite.org)
 [![Beanstalkd](https://img.shields.io/badge/Beanstalkd-enabled-6C8EBF.svg)](https://beanstalkd.github.io/)
 [![Memcached 1.6+](https://img.shields.io/badge/Memcached-1.6+-blue.svg)](https://memcached.org)
 [![phpMyAdmin](https://img.shields.io/badge/phpMyAdmin-5.2.x-orange.svg)](https://www.phpmyadmin.net)
@@ -45,8 +46,8 @@ Unlike generic LAMP boxes, **Pisco Box** provides:
 - Debian Bookworm 64-bit
 - Apache 2.4 + PHP-FPM
 - PHP: 8.4, 8.3, 8.0, 7.4, 7.0, 5.6
-- MariaDB, PostgreSQL 16, Redis 7.2+ and Memcached 1.6+
-- Database & Cache Management: phpMyAdmin, pgAdmin, Redis Commander, phpMemcachedAdmin and Beanstalkd
+- MariaDB, PostgreSQL 16, SQLite 3, Redis 7.2+ and Memcached 1.6+
+- Database & Cache Management: phpMyAdmin, pgAdmin, Redis Commander, phpMemcachedAdmin, SQLite Web and Beanstalkd
 - Development Tools: Git, Vim, Curl, Wget, and more
 - Node.js 18.x (npm included)
 - Time Zone: UTC, locale UTF-8
@@ -136,13 +137,15 @@ After running `vagrant up`, verify your setup:
 1. Visit [http://localhost:8080/pgadmin4](http://localhost:8080/pgadmin4) → postgresql dashboard
 1. Visit [http://localhost:8080/redis](http://localhost:8080/redis) → Redis Commander dashboard
 1. Visit [http://localhost:8080/memcached](http://localhost:8080/memcached) → phpMemcachedAdmin dashboard
+1. Visit [http://localhost:8080/sqlite](http://localhost:8080/sqlite) → SQLite Web dashboard
 1. Run `node -v` → Node.js installed
 1. Run `npm -v` → npm available
 1. Run `piscobox mysql login` → connects to MariaDB as `piscoboxuser`
 1. Run `sudo mysql` → connects to MariaDB as `root`
 1. Run `piscobox site create` → creates and serves `http://mysite.local`  
 1. Inside VM: `php -v` → multiple PHP versions  
-1. Run `sudo php -m | grep xdebug` → Xdebug active  
+1. Run `sudo php -m | grep xdebug` → Xdebug active
+1. Inside VM: `sqlite3 --version` → SQLite CLI available
 
 #### Pheanstalk Quick test with PHP
 
@@ -294,6 +297,29 @@ Development access:
 $ psql -U piscoboxuser -d piscoboxdb
 ```
 These commands provide sufficient access for users familiar with PostgreSQL. Additional management commands will be added to the piscobox CLI in future releases.
+
+### SQLite 3
+SQLite is available system-wide and intended for lightweight databases, prototyping and local development.
+
+**CLI access:**
+```bash
+sqlite3 --version
+```
+
+### SQLite Web
+SQLite Web is included as a lightweight web-based UI for browsing and inspecting SQLite databases.
+
+**Access:**
+
+[http://localhost:8080/sqlite](http://localhost:8080/sqlite)
+
+**Notes:**
+
+- SQLite Web runs locally and is exposed via Apache reverse proxy.
+- A default database is created at /var/sqlite/piscobox.db.
+- Intended for development and inspection only.
+
+---
 
 ### Redis 7.2+
 Redis is installed from the official Redis repository and enabled by default.

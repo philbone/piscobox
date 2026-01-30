@@ -227,3 +227,29 @@ print_error() {
 print_warning() {
     echo -e "${WARNING_COLOR}⚠ $1${NC}"
 }
+
+# --------------------------------------------
+# Detect installed PHP versions
+# --------------------------------------------
+detect_php_versions() {
+    local PHP_BASE_DIR="/etc/php"
+    local PHP_VERSIONS=()
+
+    print_step 1 1 "Detecting installed PHP versions..." >&2
+
+    if [ ! -d "$PHP_BASE_DIR" ]; then
+        print_error "PHP base directory not found: $PHP_BASE_DIR" >&2
+        return 1
+    fi
+
+    for dir in "$PHP_BASE_DIR"/*; do
+        [ -d "$dir" ] && PHP_VERSIONS+=("$(basename "$dir")")
+    done
+
+    if [ ${#PHP_VERSIONS[@]} -eq 0 ]; then
+        print_error "No PHP versions detected under $PHP_BASE_DIR" >&2
+        return 1
+    fi
+
+    echo "${PHP_VERSIONS[@]}"
+}
