@@ -47,7 +47,7 @@ Unlike generic LAMP boxes, **Pisco Box** provides:
 - Apache 2.4 + PHP-FPM
 - PHP: 8.4, 8.3, 8.0, 7.4, 7.0, 5.6
 - MariaDB, PostgreSQL 16, SQLite 3, Redis 7.2+ and Memcached 1.6+
-- Database & Cache Management: phpMyAdmin, pgAdmin, Redis Commander, phpMemcachedAdmin and Beanstalkd
+- Database & Cache Management: phpMyAdmin, pgAdmin, Redis Commander, phpMemcachedAdmin, SQLite Web and Beanstalkd
 - Development Tools: Git, Vim, Curl, Wget, and more
 - Node.js 18.x (npm included)
 - Time Zone: UTC, locale UTF-8
@@ -137,6 +137,7 @@ After running `vagrant up`, verify your setup:
 1. Visit [http://localhost:8080/pgadmin4](http://localhost:8080/pgadmin4) → postgresql dashboard
 1. Visit [http://localhost:8080/redis](http://localhost:8080/redis) → Redis Commander dashboard
 1. Visit [http://localhost:8080/memcached](http://localhost:8080/memcached) → phpMemcachedAdmin dashboard
+1. Visit [http://localhost:8080/sqlite](http://localhost:8080/sqlite) → SQLite Web dashboard
 1. Run `node -v` → Node.js installed
 1. Run `npm -v` → npm available
 1. Run `piscobox mysql login` → connects to MariaDB as `piscoboxuser`
@@ -296,6 +297,29 @@ Development access:
 $ psql -U piscoboxuser -d piscoboxdb
 ```
 These commands provide sufficient access for users familiar with PostgreSQL. Additional management commands will be added to the piscobox CLI in future releases.
+
+### SQLite 3
+SQLite is available system-wide and intended for lightweight databases, prototyping and local development.
+
+**CLI access:**
+```bash
+sqlite3 --version
+```
+
+### SQLite Web
+SQLite Web is included as a lightweight web-based UI for browsing and inspecting SQLite databases.
+
+**Access:**
+
+[http://localhost:8080/sqlite](http://localhost:8080/sqlite)
+
+**Notes:**
+
+- SQLite Web runs locally and is exposed via Apache reverse proxy.
+- A default database is created at /var/sqlite/piscobox.db.
+- Intended for development and inspection only.
+
+---
 
 ### Redis 7.2+
 Redis is installed from the official Redis repository and enabled by default.

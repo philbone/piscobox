@@ -52,6 +52,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", path: "provision/scripts/phpmemcachedadmin.sh"
   config.vm.provision "shell", path: "provision/scripts/beanstalkd.sh"
   config.vm.provision "shell", path: "provision/scripts/sqlite.sh"
+  config.vm.provision "shell", path: "provision/scripts/sqliteweb.sh"
 
   # ============================================================================
   # POST-INSTALLATION MESSAGE
