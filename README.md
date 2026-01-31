@@ -369,6 +369,19 @@ Beanstalkd is included as a lightweight job queue system, ideal for background t
 
 The service is enabled by default and starts automatically with the VM.
 
+
+### Beanstalk Console
+Pisco Box includes **Beanstalk Console** for visual management of Beanstalkd queues.
+
+- Allows you to inspect queues, jobs, and states
+- Simple and lightweight web interface
+- Ideal for debugging and monitoring during development
+
+**Access:**
+
+[http://localhost:8080/beanstalk](http://localhost:8080/beanstalk)
+
+
 ---
 
 ### Memcached 1.6+
