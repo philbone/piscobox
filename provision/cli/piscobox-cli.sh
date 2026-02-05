@@ -107,9 +107,11 @@ site_create() {
         Require all granted
     </Directory>
 
-    <FilesMatch "\\.php$">
-        SetHandler "proxy:unix:${PHP_SOCKET}|fcgi://localhost/"
-    </FilesMatch>
+    <IfModule proxy_fcgi_module>
+      <FilesMatch "\\.php$">
+          SetHandler "proxy:unix:${PHP_SOCKET}|fcgi://localhost/"
+      </FilesMatch>
+    </IfModule>
 
     ErrorLog \${APACHE_LOG_DIR}/${SITE_NAME}-error.log
     CustomLog \${APACHE_LOG_DIR}/${SITE_NAME}-access.log combined
@@ -129,6 +131,30 @@ EOF
     sudo chown www-data:www-data "${DOC_ROOT}/index.php"
     print_success "✓ Sample index.php created"
   fi
+
+# --- Begin patch: site_create() create site-specific .user.ini ---
+
+SITE_CONF_FILE="${DOC_ROOT}/.user.ini"
+
+if [[ ! -f "${SITE_CONF_FILE}" ]]; then
+  sudo tee "${SITE_CONF_FILE}" >/dev/null <<EOF
+;;
+;; Site-Specific PHP Configuration: ${SITE_NAME}
+;;
+;; This file is loaded automatically by PHP (.user.ini)
+;; Reload PHP-FPM after changes:
+;;   sudo systemctl reload php${PHP_VER}-fpm
+;;
+; memory_limit = 256M
+EOF
+  sudo chown www-data:www-data "${SITE_CONF_FILE}" || true
+  sudo chmod 644 "${SITE_CONF_FILE}" || true
+  echo "[OK] Site-specific PHP config created at ${SITE_CONF_FILE}"
+else
+  echo "[INFO] Site-specific PHP config already exists at ${SITE_CONF_FILE}"
+fi
+
+# --- End patch ---
 
   print_step 5 5 "Creating sample info-xdebug.php..."
   if [[ ! -f "${DOC_ROOT}/info-xdebug.php" ]]; then
@@ -164,6 +190,7 @@ EOF
   grep -q "${SITE_NAME}.local" "$HOSTS_FILE" 2>/dev/null || \
     echo "${APACHE_IP}   ${SITE_NAME}.local" | sudo tee -a "$HOSTS_FILE" >/dev/null
 
+  sudo systemctl reload php${PHP_VER}-fpm
   sudo systemctl reload apache2
 
   echo ""
@@ -317,6 +344,13 @@ site_delete() {
   # Limpieza de backups antiguos
   cleanup_sites_available_bak
 
+  # Clean site-specific php symlinks
+  #for ver in 8.4 8.3 8.0 7.4 7.0 5.6; do
+  get_php_versions
+  for ver in "${PHP_VERSIONS[@]}"; do
+    sudo rm -f "/etc/php/${ver}/fpm/conf.d/99-${SITE_NAME}.ini" 2>/dev/null || true
+  done
+
   echo ""
   print_success "Site ${SITE_NAME} deleted/unset locally."
   echo "If you use host-level /etc/hosts entries, run ./piscobox-sync-hosts.sh on your host to sync and remove the $SITE_NAME.local entry."
@@ -453,8 +487,20 @@ EOF
   # Limpieza de backups antiguos
   cleanup_sites_available_bak
 
+  # Remove old symlinks for this site across known versions, then create new one for current PHP_VER
+  get_php_versions
+  for old_ver in "${PHP_VERSIONS[@]}"; do
+    sudo rm -f "/etc/php/${old_ver}/fpm/conf.d/99-${SITE_NAME}.ini" 2>/dev/null || true
+  done
+
+  # Create new symlink in the target version
+  sudo ln -s "${DOC_ROOT}/.php.ini" "/etc/php/${PHP_VER}/fpm/conf.d/99-${SITE_NAME}.ini"
+
   echo ""
   print_success "Operation complete. You can verify with a phpinfo() or curl -H \"Host: ${SITE_NAME}.local\" http://127.0.0.1/"
+
+  sudo systemctl reload ${PHP_VER}-fpm
+
   return 0
 }
 
