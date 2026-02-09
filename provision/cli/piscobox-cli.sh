@@ -347,12 +347,14 @@ site_delete() {
   # Limpieza de backups antiguos
   cleanup_sites_available_bak
 
+  # This block should be deleted without any problem.
+  #
   # Clean site-specific php symlinks
   #for ver in 8.4 8.3 8.0 7.4 7.0 5.6; do
-  get_php_versions
-  for ver in "${PHP_VERSIONS[@]}"; do
-    sudo rm -f "/etc/php/${ver}/fpm/conf.d/99-${SITE_NAME}.ini" 2>/dev/null || true
-  done
+  #get_php_versions
+  #for ver in "${PHP_VERSIONS[@]}"; do
+  #  sudo rm -f "/etc/php/${ver}/fpm/conf.d/99-${SITE_NAME}.ini" 2>/dev/null || true
+  #done
 
   echo ""
   print_success "Site ${SITE_NAME} deleted/unset locally."
