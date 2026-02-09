@@ -174,7 +174,7 @@ if (function_exists("xdebug_info")) {
 
   # Update multiphp alias config for subdirectory (IP) access
   # Remove any previous block for same DOC_ROOT
-  sudo sed -i "\|<Directory ${DOC_ROOT}>|,|</Directory>|d" "$MULTIPHP_CONF"
+  sudo sed -i "\|<Directory ${DOC_ROOT}>|,\|</Directory>|d" "$MULTIPHP_CONF"
 
   sudo tee -a "$MULTIPHP_CONF" >/dev/null <<EOF
 
@@ -288,7 +288,7 @@ site_delete() {
     print_step 4 6 "Cleaning multiphp aliases..."
     # Try to remove block by matching the auto-generated comment or Directory block
     sudo sed -i "\|# Auto-generated for ${SITE_NAME} (|,|</Directory>|d" "$MULTIPHP_CONF" 2>/dev/null || true
-    sudo sed -i "\|<Directory ${DOC_ROOT}>|,|</Directory>|d" "$MULTIPHP_CONF" 2>/dev/null || true
+    sudo sed -i "\|<Directory ${DOC_ROOT}>|,\|</Directory>|d" "$MULTIPHP_CONF" 2>/dev/null || true
     print_success "✓ Multiphp aliases cleaned"
   fi
 
@@ -452,7 +452,7 @@ site_set_php_version() {
 
   # Update multiphp aliases: remove prior block for DOC_ROOT then append new one
   if [[ -f "$MULTIPHP_CONF" ]]; then
-    sudo sed -i "\|<Directory ${DOC_ROOT}>|,|</Directory>|d" "$MULTIPHP_CONF" || true
+    sudo sed -i "\|<Directory ${DOC_ROOT}>|,\|</Directory>|d" "$MULTIPHP_CONF" || true
   else
     sudo tee "$MULTIPHP_CONF" >/dev/null <<<"# Dynamic aliases for subdirectory PHP handling"
   fi
