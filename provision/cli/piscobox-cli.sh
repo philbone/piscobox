@@ -487,14 +487,19 @@ EOF
   # Limpieza de backups antiguos
   cleanup_sites_available_bak
 
+  # Note: per-site PHP configuration is handled via .user.ini
+  # No PHP-FPM symlinks are required for site-specific overrides
+  # 
+  # This commented block could be erased
+  # 
   # Remove old symlinks for this site across known versions, then create new one for current PHP_VER
-  get_php_versions
-  for old_ver in "${PHP_VERSIONS[@]}"; do
-    sudo rm -f "/etc/php/${old_ver}/fpm/conf.d/99-${SITE_NAME}.ini" 2>/dev/null || true
-  done
+  #get_php_versions
+  #for old_ver in "${PHP_VERSIONS[@]}"; do
+  #  sudo rm -f "/etc/php/${old_ver}/fpm/conf.d/99-${SITE_NAME}.ini" 2>/dev/null || true
+  #done
 
   # Create new symlink in the target version
-  sudo ln -s "${DOC_ROOT}/.php.ini" "/etc/php/${PHP_VER}/fpm/conf.d/99-${SITE_NAME}.ini"
+  #sudo ln -s "${DOC_ROOT}/.php.ini" "/etc/php/${PHP_VER}/fpm/conf.d/99-${SITE_NAME}.ini"
 
   echo ""
   print_success "Operation complete. You can verify with a phpinfo() or curl -H \"Host: ${SITE_NAME}.local\" http://127.0.0.1/"
