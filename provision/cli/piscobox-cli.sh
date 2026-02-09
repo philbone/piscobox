@@ -237,9 +237,12 @@ site_delete() {
 
   CONF_PATH="${SITES_AVAILABLE}/${SITE_NAME}.conf"
   if [[ ! -f "$CONF_PATH" ]]; then
-    print_error "No VirtualHost found at $CONF_PATH"
-    echo "Check available sites in ${SITES_AVAILABLE}."
-    return 1
+    print_warning "Site '${SITE_NAME}' does not exist."
+    print_warning "No VirtualHost found at $CONF_PATH"
+    echo "Check available sites in ${SITES_AVAILABLE}"
+    echo "run:  ls -la /etc/apache2/sites-available"
+    print_success "Nothing to delete."
+    return 0
   fi
 
   # Determine DocumentRoot from override or try to extract from conf
