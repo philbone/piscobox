@@ -499,7 +499,7 @@ EOF
   echo ""
   print_success "Operation complete. You can verify with a phpinfo() or curl -H \"Host: ${SITE_NAME}.local\" http://127.0.0.1/"
 
-  sudo systemctl reload ${PHP_VER}-fpm
+  sudo systemctl reload php${PHP_VER}-fpm
 
   return 0
 }
