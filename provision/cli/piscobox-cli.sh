@@ -174,7 +174,7 @@ if (function_exists("xdebug_info")) {
 
   # Update multiphp alias config for subdirectory (IP) access
   # Remove any previous block for same DOC_ROOT
-  sudo sed -i "\|<Directory ${DOC_ROOT}>|,|</Directory>|d" "$MULTIPHP_CONF"
+  sudo sed -i "\|<Directory ${DOC_ROOT}>|,\|</Directory>|d" "$MULTIPHP_CONF"
 
   sudo tee -a "$MULTIPHP_CONF" >/dev/null <<EOF
 
@@ -237,9 +237,12 @@ site_delete() {
 
   CONF_PATH="${SITES_AVAILABLE}/${SITE_NAME}.conf"
   if [[ ! -f "$CONF_PATH" ]]; then
-    print_error "No VirtualHost found at $CONF_PATH"
-    echo "Check available sites in ${SITES_AVAILABLE}."
-    return 1
+    print_warning "Site '${SITE_NAME}' does not exist."
+    print_warning "No VirtualHost found at $CONF_PATH"
+    echo "Check available sites in ${SITES_AVAILABLE}"
+    echo "run:  ls -la /etc/apache2/sites-available"
+    print_success "Nothing to delete."
+    return 0
   fi
 
   # Determine DocumentRoot from override or try to extract from conf
@@ -285,7 +288,7 @@ site_delete() {
     print_step 4 6 "Cleaning multiphp aliases..."
     # Try to remove block by matching the auto-generated comment or Directory block
     sudo sed -i "\|# Auto-generated for ${SITE_NAME} (|,|</Directory>|d" "$MULTIPHP_CONF" 2>/dev/null || true
-    sudo sed -i "\|<Directory ${DOC_ROOT}>|,|</Directory>|d" "$MULTIPHP_CONF" 2>/dev/null || true
+    sudo sed -i "\|<Directory ${DOC_ROOT}>|,\|</Directory>|d" "$MULTIPHP_CONF" 2>/dev/null || true
     print_success "✓ Multiphp aliases cleaned"
   fi
 
@@ -344,12 +347,14 @@ site_delete() {
   # Limpieza de backups antiguos
   cleanup_sites_available_bak
 
+  # This block should be deleted without any problem.
+  #
   # Clean site-specific php symlinks
   #for ver in 8.4 8.3 8.0 7.4 7.0 5.6; do
-  get_php_versions
-  for ver in "${PHP_VERSIONS[@]}"; do
-    sudo rm -f "/etc/php/${ver}/fpm/conf.d/99-${SITE_NAME}.ini" 2>/dev/null || true
-  done
+  #get_php_versions
+  #for ver in "${PHP_VERSIONS[@]}"; do
+  #  sudo rm -f "/etc/php/${ver}/fpm/conf.d/99-${SITE_NAME}.ini" 2>/dev/null || true
+  #done
 
   echo ""
   print_success "Site ${SITE_NAME} deleted/unset locally."
@@ -447,7 +452,7 @@ site_set_php_version() {
 
   # Update multiphp aliases: remove prior block for DOC_ROOT then append new one
   if [[ -f "$MULTIPHP_CONF" ]]; then
-    sudo sed -i "\|<Directory ${DOC_ROOT}>|,|</Directory>|d" "$MULTIPHP_CONF" || true
+    sudo sed -i "\|<Directory ${DOC_ROOT}>|,\|</Directory>|d" "$MULTIPHP_CONF" || true
   else
     sudo tee "$MULTIPHP_CONF" >/dev/null <<<"# Dynamic aliases for subdirectory PHP handling"
   fi
