@@ -226,6 +226,61 @@ Behavior highlights:
 
 ---
 
+### User PHP configuration (global and per-site)
+
+#### Global PHP configuration
+
+There is a global PHP configuration file that you can use to set defaults
+for all sites. This file lives in the project repository:
+```
+./extra_data/php/global.ini
+```
+
+
+During provisioning this file is linked into each PHP-FPM pool’s configuration
+directory so it is loaded by PHP-FPM at startup. For example:
+```
+/etc/php/<version>/fpm/conf.d/20-piscobox-global.ini
+```
+This provides a baseline of PHP settings that apply to every site unless
+overridden at the per-site level.
+
+#### Per-site PHP configuration
+
+For site-specific overrides you can place a file named:
+```
+/var/www/html/<site>/.user.ini
+```
+
+PHP-FPM reads this file automatically for that site’s document root — no
+extra symlinks are required. Any directives defined in a site’s `.user.ini`
+will override the corresponding settings from the global config *for that site only*.
+
+#### Applying changes
+
+Changes to either the global or site-specific configuration take effect
+when the relevant PHP-FPM service is reloaded:
+```
+sudo systemctl reload php<version>-fpm
+```
+
+For example, for PHP 8.3:
+```
+sudo systemctl reload php8.3-fpm
+```
+
+#### Notes
+
+* PHP’s built-in `.user.ini` cache (controlled by `user_ini.cache_ttl`)
+  may delay application of changes temporarily. Lowering this value or
+  restarting PHP-FPM forces immediate reloads.
+* The global config affects all sites, but any setting in a site’s
+  `.user.ini` overrides it for that site.
+* This mechanism is compatible with the default PHP-FPM configuration
+  and does not require creating individual FPM pools per site.
+
+---
+
 ## 📁 Project Structure
 
 ```bash

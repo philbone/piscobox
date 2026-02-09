@@ -228,6 +228,46 @@ print_warning() {
     echo -e "${WARNING_COLOR}⚠ $1${NC}"
 }
 
+# Helper: popula la variable PHP_VERSIONS con las versiones disponibles
+# Preferencia: usar detect_php_versions() si la función está definida en bash-utils.sh
+# Fallback: listar /etc/php/*
+get_php_versions() {
+  PHP_VERSIONS=()
+
+  # Si existe la función detect_php_versions (en bash-utils.sh), úsala.
+  if declare -F detect_php_versions >/dev/null 2>&1; then
+    # Algunas implementaciones podrían rellenar la variable PHP_VERSIONS directamente,
+    # otras podrían imprimir la lista. Intentamos ambas estrategias.
+    # 1) Llamamos (por si rellena PHP_VERSIONS)
+    detect_php_versions 2>/dev/null || true
+
+    # 2) Si no rellenó PHP_VERSIONS, intentamos capturar salida
+    if [[ -z "${PHP_VERSIONS[*]:-}" ]]; then
+      mapfile -t _tmp_versions < <(detect_php_versions 2>/dev/null || true)
+      if [[ ${#_tmp_versions[@]} -gt 0 ]]; then
+        PHP_VERSIONS=("${_tmp_versions[@]}")
+        unset _tmp_versions
+      fi
+    fi
+  fi
+
+  # Fallback: inspeccionar /etc/php
+  if [[ ${#PHP_VERSIONS[@]} -eq 0 ]]; then
+    if compgen -G "/etc/php/*" >/dev/null; then
+      for d in /etc/php/*; do
+        [[ -d "$d" ]] || continue
+        ver=$(basename "$d")
+        PHP_VERSIONS+=("$ver")
+      done
+    fi
+  fi
+
+  # Último recurso: una lista por defecto (mantener compatibilidad con provisiones antiguas)
+  if [[ ${#PHP_VERSIONS[@]} -eq 0 ]]; then
+    PHP_VERSIONS=( "8.4" "8.3" "8.0" "7.4" "7.0" "5.6" )
+  fi
+}
+
 # --------------------------------------------
 # Detect installed PHP versions
 # --------------------------------------------
