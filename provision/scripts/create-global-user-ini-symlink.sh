@@ -20,7 +20,7 @@ sudo mkdir -p "$(dirname "$GLOBAL_INI_SOURCE")"
 # Create global.ini template if missing
 # --------------------------------------------
 if [[ ! -f "$GLOBAL_INI_SOURCE" ]]; then
-  print_info "Global PHP config not found — creating template"
+  print_warning "Global PHP config not found — creating template"
 
   sudo tee "$GLOBAL_INI_SOURCE" >/dev/null <<'EOF'
 ; PiscoBox global PHP configuration
@@ -39,7 +39,7 @@ EOF
 
   print_success "Created $GLOBAL_INI_SOURCE"
 else
-  print_info "Found global PHP config at $GLOBAL_INI_SOURCE"
+  print_success "Found global PHP config at $GLOBAL_INI_SOURCE"
 fi
 
 # --------------------------------------------
@@ -57,7 +57,7 @@ if [[ ${#PHP_VERSIONS[@]} -eq 0 ]]; then
   exit 1
 fi
 
-print_info "Detected PHP versions: ${PHP_VERSIONS[*]}"
+print_success "Detected PHP versions: ${PHP_VERSIONS[*]}"
 
 # --------------------------------------------
 # Create symlinks per PHP version
