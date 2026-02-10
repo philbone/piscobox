@@ -11,7 +11,6 @@ UTILS_FILE="/vagrant/provision/scripts/bash-utils.sh"
 INSTALL_DIR="/usr/share/phpmemcachedadmin"
 APACHE_CONF="/etc/apache2/conf-available/phpmemcachedadmin.conf"
 REPO_URL="https://github.com/elijaa/phpmemcachedadmin.git"
-PHP_OVERRIDE_SRC="/vagrant/extra_data/php/user.ini"
 
 # --------------------------------------------------
 # Helpers
@@ -47,7 +46,7 @@ echo ""
 # --------------------------------------------------
 # Step 1: Install dependencies
 # --------------------------------------------------
-print_step 1 6 "Installing dependencies..."
+print_step 1 5 "Installing dependencies..."
 run_apt_command "apt-get install -y git"
 print_success "Dependencies installed"
 echo ""
@@ -55,7 +54,7 @@ echo ""
 # --------------------------------------------------
 # Step 2: Download phpMemcachedAdmin
 # --------------------------------------------------
-print_step 2 6 "Installing phpMemcachedAdmin..."
+print_step 2 5 "Installing phpMemcachedAdmin..."
 
 if [ -d "$INSTALL_DIR" ]; then
   print_warning "phpMemcachedAdmin already exists, skipping download"
@@ -68,7 +67,7 @@ echo ""
 # --------------------------------------------------
 # Step 3: Configure phpMemcachedAdmin
 # --------------------------------------------------
-print_step 3 6 "Configuring phpMemcachedAdmin..."
+print_step 3 5 "Configuring phpMemcachedAdmin..."
 
 CONFIG_DIR="${INSTALL_DIR}/Config"
 CONFIG_SAMPLE="${CONFIG_DIR}/Memcache.sample.php"
@@ -89,7 +88,7 @@ echo ""
 # --------------------------------------------------
 # Step 4: Configure Apache alias
 # --------------------------------------------------
-print_step 4 6 "Configuring Apache alias..."
+print_step 4 5 "Configuring Apache alias..."
 
 # Start only installed PHP-FPM services (8.2–8.4)
 for svc in $(list_installed_php_fpm_services); do
@@ -126,38 +125,9 @@ a2enconf phpmemcachedadmin >/dev/null
 echo ""
 
 # --------------------------------------------------
-# Step 5: PHP overrides (single source of truth)
-# --------------------------------------------------
-print_step 5 6 "Configuring PHP overrides..."
-
-mkdir -p "$(dirname "$PHP_OVERRIDE_SRC")"
-
-if [ ! -f "$PHP_OVERRIDE_SRC" ]; then
-  cat <<EOF > "$PHP_OVERRIDE_SRC"
-; ============================================
-; Pisco Box – User PHP overrides
-; ============================================
-
-error_reporting = E_ALL & ~E_DEPRECATED & ~E_WARNING
-display_errors = Off
-log_errors = On
-EOF
-fi
-
-# Apply overrides per PHP-FPM version
-for svc in $(list_installed_php_fpm_services); do
-  ver=$(echo "$svc" | sed -E 's/php([0-9.]+)-fpm.service/\1/')
-  ini="/etc/php/${ver}/fpm/conf.d/99-phpmemcachedadmin.ini"
-  cp "$PHP_OVERRIDE_SRC" "$ini"
-done
-
-print_success "PHP overrides applied"
-echo ""
-
-# --------------------------------------------------
 # Step 6: Reload services
 # --------------------------------------------------
-print_step 6 6 "Reloading services..."
+print_step 5 5 "Reloading services..."
 
 systemctl reload apache2
 
