@@ -401,8 +401,12 @@ site_set_php_version() {
 
   local CONF_PATH="${SITES_AVAILABLE}/${SITE_NAME}.conf"
   if [[ ! -f "$CONF_PATH" ]]; then
+    print_warning "Site '${SITE_NAME}' does not exist."
     print_error "VirtualHost file not found: $CONF_PATH"
-    return 1
+    echo "Check available sites in ${SITES_AVAILABLE}"
+    echo "run:  ls -la /etc/apache2/sites-available"
+    print_success "Nothing to set."
+    return 0
   fi
 
   # Extract DocumentRoot from the vhost conf (used to update MULTIPHP_CONF)
