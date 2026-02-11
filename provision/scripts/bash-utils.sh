@@ -293,3 +293,29 @@ detect_php_versions() {
 
     echo "${PHP_VERSIONS[@]}"
 }
+
+# --------------------------------------------
+# Detect PHP FPM socket
+# --------------------------------------------
+detect_php_fpm_socket() {
+  local service_regex="$1"
+  local socket
+
+  mapfile -t services < <(
+    systemctl list-units --type=service --state=active \
+      | awk '{print $1}' \
+      | grep -E '^php[0-9]+\.[0-9]+-fpm\.service$'
+  )
+
+  for svc in "${services[@]}"; do
+    if [[ -z "$service_regex" || "$svc" =~ $service_regex ]]; then
+      socket="/run/php/${svc/.service/.sock}"
+      if [[ -S "$socket" ]]; then
+        echo "$socket"
+        return 0
+      fi
+    fi
+  done
+
+  return 1
+}

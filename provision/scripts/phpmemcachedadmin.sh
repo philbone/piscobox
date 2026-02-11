@@ -12,21 +12,6 @@ INSTALL_DIR="/usr/share/phpmemcachedadmin"
 APACHE_CONF="/etc/apache2/conf-available/phpmemcachedadmin.conf"
 REPO_URL="https://github.com/elijaa/phpmemcachedadmin.git"
 
-# --------------------------------------------------
-# Helpers
-# --------------------------------------------------
-# phpMemcachedAdmin is bound to modern PHP-FPM only (8.2+)
-detect_php_fpm_socket() {
-  for svc in $(systemctl list-units --type=service --all | awk '/php8\.[234]-fpm.service/ {print $1}'); do
-    if systemctl is-active --quiet "$svc"; then
-      ver=$(echo "$svc" | sed -E 's/php([0-9.]+)-fpm.service/\1/')
-      sock="/run/php/php${ver}-fpm.sock"
-      [[ -S "$sock" ]] && echo "$sock" && return 0
-    fi
-  done
-  return 1
-}
-
 # phpMemcachedAdmin is bound to modern PHP-FPM only (8.2+)
 list_installed_php_fpm_services() {
   systemctl list-unit-files --type=service \
@@ -95,10 +80,10 @@ for svc in $(list_installed_php_fpm_services); do
   systemctl start "$svc" 2>/dev/null || true
 done
 
-PHP_FPM_SOCKET=$(detect_php_fpm_socket)
+PHP_FPM_SOCKET=$(detect_php_fpm_socket 'php8\.[234]-fpm\.service')
 
-if [ -z "$PHP_FPM_SOCKET" ]; then
-  print_error "No active PHP-FPM socket found."
+if [[ -z "$PHP_FPM_SOCKET" ]]; then
+  print_error "No compatible/active PHP-FPM socket found for phpMemcachedAdmin"
   exit 1
 fi
 

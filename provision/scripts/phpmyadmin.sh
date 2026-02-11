@@ -19,13 +19,6 @@ PMA_PASS="pmapassword"
 
 APACHE_CONF="/etc/apache2/conf-available/phpmyadmin.conf"
 
-# --------------------------------------------------
-# Helpers
-# --------------------------------------------------
-detect_php_fpm_socket() {
-  ls -1 /run/php/php*-fpm.sock 2>/dev/null | sort -Vr | head -n 1
-}
-
 # Initialize
 init_timer
 setup_error_handling
@@ -116,8 +109,8 @@ print_step 7 9 "Configuring Apache alias..."
 
 PHP_FPM_SOCKET=$(detect_php_fpm_socket)
 
-if [ -z "$PHP_FPM_SOCKET" ]; then
-  print_error "No PHP-FPM socket found. phpMyAdmin cannot be configured."
+if [[ -z "$PHP_FPM_SOCKET" ]]; then
+  print_error "No active PHP-FPM socket found for phpMyAdmin"
   exit 1
 fi
 
