@@ -297,24 +297,53 @@ detect_php_versions() {
 # --------------------------------------------
 # Detect PHP FPM socket
 # --------------------------------------------
+# detect_php_fpm_socket() {
+#   local service_regex="$1"
+#   local socket
+
+#   mapfile -t services < <(
+#     systemctl list-units --type=service --state=active \
+#       | awk '{print $1}' \
+#       | grep -E '^php[0-9]+\.[0-9]+-fpm\.service$'
+#   )
+
+#   for svc in "${services[@]}"; do
+#     if [[ -z "$service_regex" || "$svc" =~ $service_regex ]]; then
+#       socket="/run/php/${svc/.service/.sock}"
+#       if [[ -S "$socket" ]]; then
+#         echo "$socket"
+#         return 0
+#       fi
+#     fi
+#   done
+
+#   return 1
+# }
+
 detect_php_fpm_socket() {
+
   local service_regex="$1"
   local socket
 
   mapfile -t services < <(
     systemctl list-units --type=service --state=active \
       | awk '{print $1}' \
-      | grep -E '^php[0-9]+\.[0-9]+-fpm\.service$'
+      | grep -E '^php[0-9]+\.[0-9]+-fpm\.service$' \
+      | sort -V
   )
 
-  for svc in "${services[@]}"; do
-    if [[ -z "$service_regex" || "$svc" =~ $service_regex ]]; then
-      socket="/run/php/${svc/.service/.sock}"
-      if [[ -S "$socket" ]]; then
-        echo "$socket"
-        return 0
+  # recorrer desde la versión más alta
+  for (( idx=${#services[@]}-1 ; idx>=0 ; idx-- )) ; do
+      svc="${services[idx]}"
+
+      if [[ -z "$service_regex" || "$svc" =~ $service_regex ]]; then
+          socket="/run/php/${svc/.service/.sock}"
+
+          if [[ -S "$socket" ]]; then
+              echo "$socket"
+              return 0
+          fi
       fi
-    fi
   done
 
   return 1
