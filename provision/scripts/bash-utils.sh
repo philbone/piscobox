@@ -4,6 +4,9 @@
 # BASH UTILITIES FOR VAGRANT PROVISIONING
 # ============================================
 
+# Load global config
+source /vagrant/provision/config/piscobox-config.sh
+
 # Color definitions - consistent across all scripts
 TITLE_COLOR='\e[33m'       # Yellow for titles
 SUCCESS_COLOR='\e[96m'     # Bright cyan for success
@@ -260,12 +263,7 @@ get_php_versions() {
         PHP_VERSIONS+=("$ver")
       done
     fi
-  fi
-
-  # Último recurso: una lista por defecto (mantener compatibilidad con provisiones antiguas)
-  if [[ ${#PHP_VERSIONS[@]} -eq 0 ]]; then
-    PHP_VERSIONS=( "8.4" "8.3" "8.0" "7.4" "7.0" "5.6" )
-  fi
+  fi  
 }
 
 # --------------------------------------------

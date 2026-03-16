@@ -4,6 +4,9 @@
 # APACHE 2 INSTALLATION (multi-PHP support)
 # ============================================
 
+# Load global config
+source /vagrant/provision/config/piscobox-config.sh
+
 # Load utilities
 UTILS_FILE="/vagrant/provision/scripts/bash-utils.sh"
 [ -f "$UTILS_FILE" ] && source "$UTILS_FILE" || { echo "Error: Cannot load utilities"; exit 1; }
@@ -34,8 +37,6 @@ echo ""
 
 # Paso 3: Crear VirtualHosts por versión de PHP
 print_step 3 7 "Creating VirtualHosts for PHP versions..."
-PHP_VERSIONS=("8.4" "8.3" "8.0" "7.4" "7.0" "5.6")
-
 for ver in "${PHP_VERSIONS[@]}"; do
     SITE_DIR="/var/www/php${ver}"
     mkdir -p "$SITE_DIR"

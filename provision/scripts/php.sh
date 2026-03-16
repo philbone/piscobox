@@ -4,6 +4,9 @@
 # PHP INSTALLATION (multi-version, PHP-FPM)
 # ============================================
 
+# Load global config
+source /vagrant/provision/config/piscobox-config.sh
+
 # Load utilities
 UTILS_FILE="/vagrant/provision/scripts/bash-utils.sh"
 [ -f "$UTILS_FILE" ] && source "$UTILS_FILE" || { echo "Error: Cannot load utilities"; exit 1; }
@@ -29,7 +32,6 @@ echo ""
 
 # Paso 2: Instalar todas las versiones de PHP con PHP-FPM
 print_step 2 7 "Installing PHP versions and FPM services..."
-PHP_VERSIONS=("8.4" "8.3" "8.0" "7.4" "7.0" "5.6")
 PHP_MODULES="mysql mbstring zip xml curl gd intl bz2 bcmath soap readline cli fpm"
 
 for ver in "${PHP_VERSIONS[@]}"; do
