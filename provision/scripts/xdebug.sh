@@ -58,6 +58,10 @@ echo ""
 # --------------------------------------------
 print_step 3 5 "Creating and enabling xdebug.ini for each PHP version..."
 
+# Ensure Xdebug CLI log file exists and is writable
+sudo touch /tmp/xdebug-cli.log
+sudo chmod 666 /tmp/xdebug-cli.log
+
 for ver in "${PHP_VERSIONS[@]}"; do
     CONF_DIR="/etc/php/${ver}/mods-available"
     CONF_FILE="${CONF_DIR}/xdebug.ini"
@@ -102,10 +106,34 @@ xdebug.log_level=7
 EOF
     fi
 
+    # Ensure Xdebug log file for FPM/Apache exists and has correct permissions
+    LOG_FILE="/var/log/xdebug-${ver}.log"
+    sudo touch "$LOG_FILE"
+    sudo chown www-data:www-data "$LOG_FILE"
+    sudo chmod 664 "$LOG_FILE"
+
     if command -v phpenmod >/dev/null 2>&1; then
         sudo phpenmod -v "$ver" xdebug
     fi
+
+    # --------------------------------------------
+    # CLI override: avoid /var/log permission issues
+    # --------------------------------------------
+    CLI_CONF_DIR="/etc/php/${ver}/cli/conf.d"
+    CLI_CONF_FILE="${CLI_CONF_DIR}/99-xdebug-cli.ini"
+
+    echo "→ Creating CLI override for PHP $ver"
+
+    sudo mkdir -p "$CLI_CONF_DIR"
+
+    sudo tee "$CLI_CONF_FILE" > /dev/null <<EOF
+[xdebug]
+xdebug.log=/tmp/xdebug-cli.log
+xdebug.start_with_request=trigger
+EOF
+
 done
+
 echo "✅ Configuration files created."
 echo ""
 
