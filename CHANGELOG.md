@@ -6,6 +6,40 @@ The format is based on "Keep a Changelog" and follows Semantic Versioning:
 https://keepachangelog.com/en/1.0.0/
 
 ---
+## [0.3.0] - 2026-03-17
+
+### Added
+- PostgreSQL 16 support
+- Redis 7.2+ installation and configuration
+- Memcached 1.6.25+ support
+- Beanstalkd 1.12 integration
+- SQLite 3.46+ support
+- Node.js 18 LTS (with npm)
+- pgAdmin 4 integration
+- Redis Commander integration (web UI)
+- phpMemcachedAdmin integration
+- SQLite Web integration
+- Beanstalk Console integration
+
+### Changed
+- Centralized PHP version management using global configuration (`PHP_VERSIONS`)
+- Improved provisioning robustness with safe configuration loading
+- Refactored provisioning scripts for consistency and maintainability
+- Improved Xdebug CLI experience (logging to user HOME)
+- Apache reverse proxy integration for service dashboards (e.g. `/redis`)
+- Redis Commander systemd service hardened
+
+### Fixed
+- phpMyAdmin incorrectly detecting PHP 5.6
+- `set_php_version` virtualhost resolution issues
+- sed delimiter errors in CLI scripts
+- CRLF compatibility issues in bash scripts (Windows environments)
+- `.user.ini` unintended creation during provisioning
+- php.ini strict behavior inconsistencies
+
+### Notes
+- Several internal improvements were made to CLI commands and provisioning flow for better stability and developer experience.
+---
 
 ## [0.2.0] - 2026-01-19
 
