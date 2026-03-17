@@ -9,25 +9,37 @@ https://keepachangelog.com/en/1.0.0/
 ## [0.3.0] - 2026-03-17
 
 ### Added
+
+#### Core Services
 - PostgreSQL 16 support
 - Redis 7.2+ installation and configuration
-- Memcached 1.6.25+ support
+- Memcached 1.6+ support
 - Beanstalkd 1.12 integration
 - SQLite 3.46+ support
+
+#### Developer Tooling
 - Node.js 18 LTS (with npm)
+- Built-in `piscobox` CLI for site and environment management
+
+#### Web Interfaces
 - pgAdmin 4 integration
 - Redis Commander integration (web UI)
 - phpMemcachedAdmin integration
 - SQLite Web integration
 - Beanstalk Console integration
 
+#### Platform Features
+- Native multi-PHP support (PHP 5.6 → 8.4 via PHP-FPM)
+- Full multi-version Xdebug support (Xdebug 2.x and 3.x)
+- Web dashboards exposed via Apache reverse proxy (e.g. /redis, /pgadmin4)
+
 ### Changed
 - Centralized PHP version management using global configuration (`PHP_VERSIONS`)
 - Improved provisioning robustness with safe configuration loading
 - Refactored provisioning scripts for consistency and maintainability
 - Improved Xdebug CLI experience (logging to user HOME)
-- Apache reverse proxy integration for service dashboards (e.g. `/redis`)
 - Redis Commander systemd service hardened
+- Improved provisioning stability and test coverage
 
 ### Fixed
 - phpMyAdmin incorrectly detecting PHP 5.6
