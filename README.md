@@ -19,7 +19,8 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18.x-339933.svg)](https://nodejs.org)
 
 > **Version:** 0.3.0  
-> **Repository:** https://github.com/philbone/piscobox
+> **Repository:** https://github.com/philbone/piscobox  
+> **See [CHANGELOG.md](./CHANGELOG.md)** for full release history
 
 ---
 
@@ -41,6 +42,18 @@ Unlike generic LAMP boxes, **Pisco Box** provides:
 
 ---
 
+## 🎯 Use Cases
+
+Pisco Box is ideal for:
+
+- PHP developers working with multiple PHP versions
+- Maintaining legacy applications (PHP 5.6–7.x)
+- Full-stack development (PHP + Node.js)
+- Projects requiring multiple databases
+- Teams needing reproducible local environments
+
+---
+
 ## ✨ Features
 
 - Debian Bookworm 64-bit
@@ -58,6 +71,16 @@ Unlike generic LAMP boxes, **Pisco Box** provides:
 **Dependencies:**
 * [Vagrant 2.2+](https://www.vagrantup.com/downloads)
 * [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (recommended), or Parallels / VMware
+
+---
+
+## 🖥️ Host Requirements
+
+Recommended:
+
+- 8 GB RAM (minimum 4 GB)
+- 20 GB free disk space
+- CPU with virtualization enabled
 
 ---
 
@@ -113,7 +136,7 @@ vagrant ssh
 Or connect via an external SSH client:
 
 ```
-Host: locahost or 127.0.0.1
+Host: localhost or 127.0.0.1
 User: vagrant
 Password: vagrant
 Key: .vagrant/machines/default/virtualbox/private_key
@@ -310,6 +333,8 @@ pisco-box/
 | Password  | `DevPassword123`|
 | Database  | `piscoboxdb`    |
 | Host      | `localhost`     |
+
+⚠️ **These credentials are for local development only.**
 
 > 💡 **phpMyAdmin** is available at  
 > [http://localhost:8080/phpmyadmin](http://localhost:8080/phpmyadmin)  
@@ -615,6 +640,22 @@ sudo nano /etc/hosts
 ```
 ---
 
+## 🔄 Updating the Box
+
+To apply provisioning changes:
+
+```bash
+vagrant provision
+```
+
+For a clean rebuild:
+```bash
+vagrant destroy -f
+vagrant up
+```
+
+---
+
 ## 🐛 Troubleshooting (Quick Guide)
 
 ### 🧩 PHP not executing
@@ -650,6 +691,13 @@ sudo systemctl status redis-commander
 sudo systemctl restart redis-commander
 sudo systemctl reload apache2
 ```
+---
+## ⚠️ Known Limitations
+
+- Not intended for production use
+- Higher memory usage when running multiple PHP versions simultaneously
+- Windows file sync performance may vary
+- Some npm warnings may appear during provisioning (safe to ignore)
 
 ---
 
