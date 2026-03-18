@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "2048"
     vb.cpus = 2
-    vb.name = "PiscoBox-0.2.0-Dev"
+    vb.name = "PiscoBox-0.3.0-Dev"
   end
 
   config.vm.network "private_network", ip: "192.168.56.110"
@@ -20,7 +20,7 @@ Vagrant.configure("2") do |config|
   # ============================================================================
   config.vm.synced_folder "./public_html", "/var/www/html",
     owner: "www-data", group: "www-data",
-    mount_options: ["dmode=755", "fmode=644"]
+    mount_options: ["dmode=775", "fmode=664"]
 
   config.vm.synced_folder "./extra_data", "/var/extra_data",
     owner: "www-data", group: "www-data",
@@ -41,8 +41,20 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", path: "provision/scripts/motd.sh"
   config.vm.provision "shell", path: "provision/scripts/apache.sh"
   config.vm.provision "shell", path: "provision/scripts/php.sh"
+  config.vm.provision "shell", path: "provision/scripts/create-global-user-ini-symlink.sh"
   config.vm.provision "shell", path: "provision/scripts/database.sh"
-  config.vm.provision "shell", path: "provision/scripts/xdebug.sh"  
+  config.vm.provision "shell", path: "provision/scripts/phpmyadmin.sh" 
+  config.vm.provision "shell", path: "provision/scripts/postgresql.sh"
+  config.vm.provision "shell", path: "provision/scripts/pgadmin.sh"
+  config.vm.provision "shell", path: "provision/scripts/xdebug.sh"
+  config.vm.provision "shell", path: "provision/scripts/redis.sh"
+  config.vm.provision "shell", path: "provision/scripts/redis-commander.sh"
+  config.vm.provision "shell", path: "provision/scripts/memcached.sh"
+  config.vm.provision "shell", path: "provision/scripts/phpmemcachedadmin.sh"
+  config.vm.provision "shell", path: "provision/scripts/beanstalkd.sh"
+  config.vm.provision "shell", path: "provision/scripts/sqlite.sh"
+  config.vm.provision "shell", path: "provision/scripts/sqliteweb.sh"
+  config.vm.provision "shell", path: "provision/scripts/beanstalk-console.sh"
 
   # ============================================================================
   # POST-INSTALLATION MESSAGE

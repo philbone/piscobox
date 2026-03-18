@@ -6,16 +6,27 @@
 [![Apache 2.4](https://img.shields.io/badge/Apache-2.4-A64D79.svg)](https://httpd.apache.org/docs/2.4/new_features_2_4.html)
 [![PHP Multi](https://img.shields.io/badge/PHP-Multi--Version-8892BF.svg)](https://www.php.net)
 [![MariaDB](https://img.shields.io/badge/MariaDB-latest-A26D37.svg)](https://mariadb.com/docs/release-notes)
+[![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-blue.svg)](https://www.postgresql.org)
+[![Redis 7.2+](https://img.shields.io/badge/Redis-7.2+-DC382D.svg)](https://redis.io)
+[![SQLite](https://img.shields.io/badge/SQLite-3-blue.svg)](https://www.sqlite.org)
+[![Beanstalkd](https://img.shields.io/badge/Beanstalkd-enabled-6C8EBF.svg)](https://beanstalkd.github.io/)
+[![Memcached 1.6+](https://img.shields.io/badge/Memcached-1.6+-blue.svg)](https://memcached.org)
+[![phpMyAdmin](https://img.shields.io/badge/phpMyAdmin-5.2.x-orange.svg)](https://www.phpmyadmin.net)
+[![pgAdmin](https://img.shields.io/badge/pgAdmin-4-blue.svg)](https://www.pgadmin.org)
+[![Redis Commander](https://img.shields.io/badge/Redis%20Commander-0.9.x-D82C20.svg)](https://github.com/joeferner/redis-commander)
+[![phpMemcachedAdmin](https://img.shields.io/badge/phpMemcachedAdmin-latest-blue.svg)](https://github.com/elijaa/phpmemcachedadmin)
 [![Composer 2.x](https://img.shields.io/badge/Composer-2.x-89552D.svg)](https://getcomposer.org)
+[![Node.js](https://img.shields.io/badge/Node.js-18.x-339933.svg)](https://nodejs.org)
 
-> **Version:** 0.2.0  
-> **Repository:** [https://github.com/philbone/piscobox](https://github.com/philbone/piscobox)
+> **Version:** 0.3.0  
+> **Repository:** https://github.com/philbone/piscobox  
+> **See [CHANGELOG.md](./CHANGELOG.md)** for full release history
 
 ---
 
 **A modern LAMP stack for web developers based on Debian Bookworm**
 
-Pisco Box is a ready-to-use Vagrant box built on Debian, providing a complete LAMP development environment with Apache, multiple PHP versions, MariaDB, and essential tools for modern web development.
+Pisco Box is a ready-to-use Vagrant box built on Debian, providing a complete LAMP development environment with Apache, multiple PHP versions, MariaDB, PostgreSQL, Redis and essential tools for modern web development.
 
 ---
 
@@ -23,42 +34,53 @@ Pisco Box is a ready-to-use Vagrant box built on Debian, providing a complete LA
 
 Unlike generic LAMP boxes, **Pisco Box** provides:
 
-* Native **multi-PHP** support (no version switching hacks)
-* Automated **VirtualHost + domain management**
-* Full **Xdebug 3** integration for all PHP versions
-* A clean, safe, developer-friendly **CLI**
-* Built-in **safety checks and backups** for site operations
+- Native **multi-PHP** support
+- Automated **VirtualHost + domain management**
+- Full **Xdebug 3** integration
+- Safe, developer-friendly **CLI**
+- Built-in **backups and safety checks**
+
+---
+
+## 🎯 Use Cases
+
+Pisco Box is ideal for:
+
+- PHP developers working with multiple PHP versions
+- Maintaining legacy applications (PHP 5.6–7.x)
+- Full-stack development (PHP + Node.js)
+- Projects requiring multiple databases
+- Teams needing reproducible local environments
 
 ---
 
 ## ✨ Features
 
-* **Operating System**: Debian Bookworm 64-bit
-* **Web Server**: Apache 2.4 with PHP-FPM integration
-* **PHP (Multi-Version Support)**:
-  * Multiple PHP versions running simultaneously
-  * Available versions: **8.4, 8.3, 8.0, 7.4, 7.0, 5.6**
-* **Database**: MariaDB Server & Client
-* **Package Manager**: Composer 2.x
-* **Development Tools**: Git, Vim, Curl, Wget, and more
-* **Time Zone**: UTC, locale UTF-8
-* **Synchronized Directories**: Seamless host ↔ VM file sharing
-* **Local Domains Assistant**: Automates `/etc/hosts` updates
-* **CLI Tool (`piscobox`)**: Simplifies common development tasks
-
----
-
-## 🧠 Requirements
-
-**Host system:**
-* OS: Linux / macOS / Windows 10+
-* RAM: 2 GB minimum (4 GB recommended)
-* CPU: Dual-core or higher
-* Disk space: ~3 GB (base box + synced folders)
+- Debian Bookworm 64-bit
+- Apache 2.4 + PHP-FPM
+- PHP: 8.4, 8.3, 8.0, 7.4, 7.0, 5.6
+- MariaDB, PostgreSQL 16, SQLite 3, Redis 7.2+ and Memcached 1.6+
+- Database & Cache Management: phpMyAdmin, pgAdmin, Redis Commander, phpMemcachedAdmin, SQLite Web and Beanstalkd
+- Development Tools: Git, Vim, Curl, Wget, and more
+- Node.js 18.x (npm included)
+- Time Zone: UTC, locale UTF-8
+- Synchronized Directories: Seamless host ↔ VM file sharing
+- Local Domains Assistant: Automates `/etc/hosts` updates
+- CLI Tool (`piscobox`): Simplifies common development tasks
 
 **Dependencies:**
 * [Vagrant 2.2+](https://www.vagrantup.com/downloads)
 * [VirtualBox](https://www.virtualbox.org/wiki/Downloads) (recommended), or Parallels / VMware
+
+---
+
+## 🖥️ Host Requirements
+
+Recommended:
+
+- 8 GB RAM (minimum 4 GB)
+- 20 GB free disk space
+- CPU with virtualization enabled
 
 ---
 
@@ -77,8 +99,6 @@ Unlike generic LAMP boxes, **Pisco Box** provides:
 ---
 
 ## 🚀 Quick Start
-
-### Installation
 
 ```bash
 git clone https://github.com/philbone/piscobox.git
@@ -116,7 +136,7 @@ vagrant ssh
 Or connect via an external SSH client:
 
 ```
-Host: locahost or 127.0.0.1
+Host: localhost or 127.0.0.1
 User: vagrant
 Password: vagrant
 Key: .vagrant/machines/default/virtualbox/private_key
@@ -136,10 +156,54 @@ After running `vagrant up`, verify your setup:
 1. Visit [http://localhost:8080/piscoweb/hello-world.php](http://localhost:8080/piscoweb/hello-world.php) → Pisco Box Hello World! 
 1. Visit [http://localhost:8080/info.php](http://localhost:8080/info.php) → PHP info
 1. Visit [http://localhost:8080/info-xdebug.php](http://localhost:8080/info-xdebug.php) → Xdebug info
-1. Run `piscobox mysql login` → connects to MariaDB  
+1. Visit [http://localhost:8080/phpmyadmin](http://localhost:8080/phpmyadmin) → phpMyAdmin dashboard
+1. Visit [http://localhost:8080/pgadmin4](http://localhost:8080/pgadmin4) → postgresql dashboard
+1. Visit [http://localhost:8080/redis](http://localhost:8080/redis) → Redis Commander dashboard
+1. Visit [http://localhost:8080/memcached](http://localhost:8080/memcached) → phpMemcachedAdmin dashboard
+1. Visit [http://localhost:8080/sqlite](http://localhost:8080/sqlite) → SQLite Web dashboard
+1. Run `node -v` → Node.js installed
+1. Run `npm -v` → npm available
+1. Run `piscobox mysql login` → connects to MariaDB as `piscoboxuser`
+1. Run `sudo mysql` → connects to MariaDB as `root`
 1. Run `piscobox site create` → creates and serves `http://mysite.local`  
 1. Inside VM: `php -v` → multiple PHP versions  
-1. Run `sudo php -m | grep xdebug` → Xdebug active  
+1. Run `sudo php -m | grep xdebug` → Xdebug active
+1. Inside VM: `sqlite3 --version` → SQLite CLI available
+
+#### Pheanstalk Quick test with PHP
+
+In a public directory such as `/var/www/html/test`, install the client library using Composer.
+
+```bash
+$ composer require pda/pheanstalk
+```
+
+Then create a php file like `pheanstalk-test.php` and paste this code inside:
+```php
+<?php
+
+require __DIR__ . '/vendor/autoload.php';
+
+use Pheanstalk\Pheanstalk;
+
+$queue = Pheanstalk::create('127.0.0.1');
+
+$queue->put('Hello Pisco Box!');
+$job = $queue->reserve();
+
+echo $job->getData();
+
+$queue->delete($job);
+
+```
+
+Finally, try: [http://localhost:8080/test/pheanstalk-test.php](http://localhost:8080/test/pheanstalk-test.php)
+
+**Expected output:**
+
+> Hello Pisco Box!
+
+
 
 ---
 
@@ -185,6 +249,61 @@ Behavior highlights:
 
 ---
 
+### User PHP configuration (global and per-site)
+
+#### Global PHP configuration
+
+There is a global PHP configuration file that you can use to set defaults
+for all sites. This file lives in the project repository:
+```
+./extra_data/php/global.ini
+```
+
+
+During provisioning this file is linked into each PHP-FPM pool’s configuration
+directory so it is loaded by PHP-FPM at startup. For example:
+```
+/etc/php/<version>/fpm/conf.d/20-piscobox-global.ini
+```
+This provides a baseline of PHP settings that apply to every site unless
+overridden at the per-site level.
+
+#### Per-site PHP configuration
+
+For site-specific overrides you can place a file named:
+```
+/var/www/html/<site>/.user.ini
+```
+
+PHP-FPM reads this file automatically for that site’s document root — no
+extra symlinks are required. Any directives defined in a site’s `.user.ini`
+will override the corresponding settings from the global config *for that site only*.
+
+#### Applying changes
+
+Changes to either the global or site-specific configuration take effect
+when the relevant PHP-FPM service is reloaded:
+```
+sudo systemctl reload php<version>-fpm
+```
+
+For example, for PHP 8.3:
+```
+sudo systemctl reload php8.3-fpm
+```
+
+#### Notes
+
+* PHP’s built-in `.user.ini` cache (controlled by `user_ini.cache_ttl`)
+  may delay application of changes temporarily. Lowering this value or
+  restarting PHP-FPM forces immediate reloads.
+* The global config affects all sites, but any setting in a site’s
+  `.user.ini` overrides it for that site.
+* This mechanism is compatible with the default PHP-FPM configuration
+  and does not require creating individual FPM pools per site.
+
+---
+
 ## 📁 Project Structure
 
 ```bash
@@ -205,14 +324,22 @@ pisco-box/
 
 ## 🗄️ Database Configuration
 
+### MariaDB (MySQL)
 **Default credentials:**
 
-| Parameter | Value |
-|------------|--------|
-| User | `piscoboxuser` |
-| Password | `DevPassword123` |
-| Host | `localhost` |
-| Database | `piscoboxdb` |
+| Parameter | Value           |
+|-----------|-----------------|
+| User      | `piscoboxuser`  |
+| Password  | `DevPassword123`|
+| Database  | `piscoboxdb`    |
+| Host      | `localhost`     |
+
+⚠️ **These credentials are for local development only.**
+
+> 💡 **phpMyAdmin** is available at  
+> [http://localhost:8080/phpmyadmin](http://localhost:8080/phpmyadmin)  
+>  
+> Database creation and administrative tasks are intentionally handled via the `piscobox` CLI.
 
 ### Examples
 
@@ -227,6 +354,176 @@ mariadb -u piscoboxuser -p
 PHP:
 ```php
 $mysqli = new mysqli("localhost", "piscoboxuser", "DevPassword123", "piscoboxdb");
+```
+
+### PostgreSQL 16
+PostgreSQL does **not** use a `root` user. Administrative access is provided by the `postgres` role.
+
+**Default credentials:**
+
+| Parameter | Value           |
+|-----------|-----------------|
+| User      | `piscoboxuser`  |
+| Password  | `DevPassword123`|
+| Database  | `piscoboxdb`    |
+| Host      | `localhost`     |
+
+Administrative access (superuser):
+```bash
+$ sudo -u postgres psql
+```
+Development access:
+```bash
+$ psql -U piscoboxuser -d piscoboxdb
+```
+These commands provide sufficient access for users familiar with PostgreSQL. Additional management commands will be added to the piscobox CLI in future releases.
+
+### SQLite 3
+SQLite is available system-wide and intended for lightweight databases, prototyping and local development.
+
+**CLI access:**
+```bash
+sqlite3 --version
+```
+
+### SQLite Web
+SQLite Web is included as a lightweight web-based UI for browsing and inspecting SQLite databases.
+
+**Access:**
+
+[http://localhost:8080/sqlite](http://localhost:8080/sqlite)
+
+**Notes:**
+
+- SQLite Web runs locally and is exposed via Apache reverse proxy.
+- A default database is created at /var/sqlite/piscobox.db.
+- Intended for development and inspection only.
+
+---
+
+### Redis 7.2+
+Redis is installed from the official Redis repository and enabled by default.
+
+**Default configuration:**
+
+| Parameter       | Value                       |
+| --------------- | --------------------------- |
+| Host            | `127.0.0.1`                 |
+| Port            | `6379`                      |
+| Auth            | Disabled (development only) |
+| Max memory      | `256mb`                     |
+| Eviction policy | `allkeys-lru`               |
+
+Test Redis:
+```bash
+$ redis-cli
+PING
+```
+---
+
+### Redis Commander
+
+Redis Commander is included as a web-based management UI for Redis.
+
+**Access:**
+- http://localhost:8080/redis
+
+**Notes:**
+- Redis Commander runs locally and is exposed via Apache reverse proxy.
+- During provisioning, npm may emit deprecation warnings related to upstream dependencies.
+  These warnings are expected and safe to ignore in the context of local development.
+
+---
+
+### Beanstalkd
+
+Beanstalkd is included as a lightweight job queue system, ideal for background tasks and workers during development.
+
+**Default configuration:**
+
+| Parameter | Value        |
+|----------|--------------|
+| Host     | `127.0.0.1`  |
+| Port     | `11300`      |
+| Auth     | Not required |
+
+The service is enabled by default and starts automatically with the VM.
+
+
+### Beanstalk Console
+Pisco Box includes **Beanstalk Console** for visual management of Beanstalkd queues.
+
+- Allows you to inspect queues, jobs, and states
+- Simple and lightweight web interface
+- Ideal for debugging and monitoring during development
+
+**Access:**
+
+[http://localhost:8080/beanstalk](http://localhost:8080/beanstalk)
+
+
+---
+
+### Memcached 1.6+
+
+Memcached is installed and enabled by default for local development.
+
+**Default configuration:**
+
+| Parameter | Value |
+|----------|------|
+| Host     | `127.0.0.1` |
+| Port     | `11211` |
+| Memory   | `128 MB` |
+| Auth     | Disabled (development only) |
+
+#### Test Memcached (CLI)
+
+```bash
+echo stats | nc 127.0.0.1 11211
+```
+
+### Test Memcached (PHP)
+
+> Memcached is provided via the native PHP extension (php-memcached).
+> No Composer dependency is required.
+
+```bash
+$ php -dxdebug.mode=off -r '
+$m = new Memcached();
+$m->addServer("127.0.0.1", 11211);
+$m->set("ping", "pong");
+echo $m->get("ping") . PHP_EOL;
+'
+```
+---
+
+### phpMemcachedAdmin
+
+phpMemcachedAdmin is included as a lightweight web-based UI for Memcached.
+
+**Access:**
+- http://localhost:8080/memcached
+
+**Notes:**
+- Connected to Memcached at `127.0.0.1:11211`
+- PHP-FPM socket is auto-detected
+- PHP 8.x deprecation warnings are suppressed for a clean UI
+
+---
+
+### Node.js 18.x
+
+Node.js is installed system-wide to support modern frontend and tooling workflows.
+
+**Included:**
+- Node.js 18.x
+- npm (bundled)
+
+**Examples:**
+```bash
+node -v
+npm -v
 ```
 
 ---
@@ -284,28 +581,15 @@ sudo systemctl restart php8.3-fpm
 # View logs
 sudo tail -f /var/log/apache2/error.log
 sudo tail -f /var/log/apache2/piscobox-error.log
+
+
+# Restart Memcached
+sudo systemctl restart memcached
 ```
 
 ---
 
 ## 🔧 Customization
-
-### Configure Local Hostnames Manually
-
-**macOS/Linux**
-```bash
-sudo nano /etc/hosts
-# Add:
-127.0.0.1 piscobox.local
-```
-
-**Windows**
-```text
-# Edit C:\Windows\System32\drivers\etc\hosts as Administrator
-127.0.0.1 piscobox.local
-```
-
----
 
 ### Configure Hostnames With CLI
 
@@ -340,6 +624,38 @@ This safely updates `/etc/hosts`, removing old entries and adding new ones.
 
 ---
 
+### Or, Configure Local Hostnames Manually
+
+**macOS/Linux**
+```bash
+sudo nano /etc/hosts
+# Add:
+127.0.0.1 piscobox.local
+```
+
+**Windows**
+```text
+# Edit C:\Windows\System32\drivers\etc\hosts as Administrator
+127.0.0.1 piscobox.local
+```
+---
+
+## 🔄 Updating the Box
+
+To apply provisioning changes:
+
+```bash
+vagrant provision
+```
+
+For a clean rebuild:
+```bash
+vagrant destroy -f
+vagrant up
+```
+
+---
+
 ## 🐛 Troubleshooting (Quick Guide)
 
 ### 🧩 PHP not executing
@@ -368,35 +684,29 @@ sudo chown -R vagrant:vagrant /vagrant
 # Then flush DNS cache if needed
 ```
 
+### 🔴 Redis Commander not loading
+
+```bash
+sudo systemctl status redis-commander
+sudo systemctl restart redis-commander
+sudo systemctl reload apache2
+```
+---
+## ⚠️ Known Limitations
+
+- Not intended for production use
+- Higher memory usage when running multiple PHP versions simultaneously
+- Windows file sync performance may vary
+- Some npm warnings may appear during provisioning (safe to ignore)
+
 ---
 
 ## ⚠️ Security Notice
 
-Pisco Box is intended **only for local development**.  
-Do **not** expose this VM to the public internet or reuse included credentials in production environments.
-
----
-
-## 🤝 Contributing
-
-1. Fork the repository  
-2. Create a branch (`git checkout -b feature/AmazingFeature`)  
-3. Commit (`git commit -m 'Add some AmazingFeature'`)  
-4. Push (`git push origin feature/AmazingFeature`)  
-5. Open a Pull Request  
+Local development only. Do not use in production.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file.
-
----
-
-## 🙏 Acknowledgments
-
-* Built with ❤️ for the developer community  
-* Thanks to all contributors and users  
-* Maintainer: Philbone  
-* Version: 0.2.0  
-* Repository: [https://github.com/philbone/piscobox](https://github.com/philbone/piscobox)
+MIT License

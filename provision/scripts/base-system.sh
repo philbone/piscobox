@@ -17,6 +17,9 @@ print_header "BASE SYSTEM AND REPOSITORIES"
 echo "Start at: $SCRIPT_START_TIME"
 echo ""
 
+# Add the vagrant user to the www-data group
+usermod -aG www-data vagrant
+
 # Step 1: Update system
 print_step 1 4 "Updating system"
 run_apt_command "apt-get update"

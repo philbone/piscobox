@@ -4,6 +4,9 @@
 # BASH UTILITIES FOR VAGRANT PROVISIONING
 # ============================================
 
+# Load global config
+source /vagrant/provision/config/piscobox-config.sh
+
 # Color definitions - consistent across all scripts
 TITLE_COLOR='\e[33m'       # Yellow for titles
 SUCCESS_COLOR='\e[96m'     # Bright cyan for success
@@ -226,4 +229,120 @@ print_error() {
 # Usage: print_warning "Potential issue"
 print_warning() {
     echo -e "${WARNING_COLOR}⚠ $1${NC}"
+}
+
+# Helper: popula la variable PHP_VERSIONS con las versiones disponibles
+# Preferencia: usar detect_php_versions() si la función está definida en bash-utils.sh
+# Fallback: listar /etc/php/*
+get_php_versions() {
+  PHP_VERSIONS=()
+
+  # Si existe la función detect_php_versions (en bash-utils.sh), úsala.
+  if declare -F detect_php_versions >/dev/null 2>&1; then
+    # Algunas implementaciones podrían rellenar la variable PHP_VERSIONS directamente,
+    # otras podrían imprimir la lista. Intentamos ambas estrategias.
+    # 1) Llamamos (por si rellena PHP_VERSIONS)
+    detect_php_versions 2>/dev/null || true
+
+    # 2) Si no rellenó PHP_VERSIONS, intentamos capturar salida
+    if [[ -z "${PHP_VERSIONS[*]:-}" ]]; then
+      mapfile -t _tmp_versions < <(detect_php_versions 2>/dev/null || true)
+      if [[ ${#_tmp_versions[@]} -gt 0 ]]; then
+        PHP_VERSIONS=("${_tmp_versions[@]}")
+        unset _tmp_versions
+      fi
+    fi
+  fi
+
+  # Fallback: inspeccionar /etc/php
+  if [[ ${#PHP_VERSIONS[@]} -eq 0 ]]; then
+    if compgen -G "/etc/php/*" >/dev/null; then
+      for d in /etc/php/*; do
+        [[ -d "$d" ]] || continue
+        ver=$(basename "$d")
+        PHP_VERSIONS+=("$ver")
+      done
+    fi
+  fi  
+}
+
+# --------------------------------------------
+# Detect installed PHP versions
+# --------------------------------------------
+detect_php_versions() {
+    local PHP_BASE_DIR="/etc/php"
+    local PHP_VERSIONS=()
+
+    print_step 1 1 "Detecting installed PHP versions..." >&2
+
+    if [ ! -d "$PHP_BASE_DIR" ]; then
+        print_error "PHP base directory not found: $PHP_BASE_DIR" >&2
+        return 1
+    fi
+
+    for dir in "$PHP_BASE_DIR"/*; do
+        [ -d "$dir" ] && PHP_VERSIONS+=("$(basename "$dir")")
+    done
+
+    if [ ${#PHP_VERSIONS[@]} -eq 0 ]; then
+        print_error "No PHP versions detected under $PHP_BASE_DIR" >&2
+        return 1
+    fi
+
+    echo "${PHP_VERSIONS[@]}"
+}
+
+# --------------------------------------------
+# Detect PHP FPM socket
+# --------------------------------------------
+# detect_php_fpm_socket() {
+#   local service_regex="$1"
+#   local socket
+
+#   mapfile -t services < <(
+#     systemctl list-units --type=service --state=active \
+#       | awk '{print $1}' \
+#       | grep -E '^php[0-9]+\.[0-9]+-fpm\.service$'
+#   )
+
+#   for svc in "${services[@]}"; do
+#     if [[ -z "$service_regex" || "$svc" =~ $service_regex ]]; then
+#       socket="/run/php/${svc/.service/.sock}"
+#       if [[ -S "$socket" ]]; then
+#         echo "$socket"
+#         return 0
+#       fi
+#     fi
+#   done
+
+#   return 1
+# }
+
+detect_php_fpm_socket() {
+
+  local service_regex="$1"
+  local socket
+
+  mapfile -t services < <(
+    systemctl list-units --type=service --state=active \
+      | awk '{print $1}' \
+      | grep -E '^php[0-9]+\.[0-9]+-fpm\.service$' \
+      | sort -V
+  )
+
+  # recorrer desde la versión más alta
+  for (( idx=${#services[@]}-1 ; idx>=0 ; idx-- )) ; do
+      svc="${services[idx]}"
+
+      if [[ -z "$service_regex" || "$svc" =~ $service_regex ]]; then
+          socket="/run/php/${svc/.service/.sock}"
+
+          if [[ -S "$socket" ]]; then
+              echo "$socket"
+              return 0
+          fi
+      fi
+  done
+
+  return 1
 }
