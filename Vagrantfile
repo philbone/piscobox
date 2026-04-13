@@ -41,6 +41,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", path: "provision/scripts/motd.sh"
   config.vm.provision "shell", path: "provision/scripts/apache.sh"
   config.vm.provision "shell", path: "provision/scripts/php.sh"
+  config.vm.provision "shell", path: "provision/scripts/golang.sh"
   config.vm.provision "shell", path: "provision/scripts/create-global-user-ini-symlink.sh"
   config.vm.provision "shell", path: "provision/scripts/database.sh"
   config.vm.provision "shell", path: "provision/scripts/phpmyadmin.sh" 
@@ -66,6 +67,7 @@ Vagrant.configure("2") do |config|
 
   ✅ Base system and repositories
   ✅ PHP 8.3 + PHP-FPM
+  ✅ Go (latest stable version)
   ✅ Apache 2.4 + VirtualHost
   ✅ MariaDB
   
