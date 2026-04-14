@@ -14,3 +14,8 @@ readonly PISCOBOX_CONFIG_LOADED=1
 
 # Supported PHP versions for provisioning
 readonly PHP_VERSIONS=("8.4" "8.3" "5.6")
+
+# Python configuration
+readonly PYTHON_ENABLED=true
+readonly PYTHON3_ENABLED=true
+readonly PYTHON27_ENABLED=true
