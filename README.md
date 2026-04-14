@@ -5,6 +5,7 @@
 [![Debian 12](https://img.shields.io/badge/Debian-12-C70E37.svg)](https://www.debian.org/releases/bookworm/)
 [![Apache 2.4](https://img.shields.io/badge/Apache-2.4-A64D79.svg)](https://httpd.apache.org/docs/2.4/new_features_2_4.html)
 [![PHP Multi](https://img.shields.io/badge/PHP-Multi--Version-8892BF.svg)](https://www.php.net)
+[![Python](https://img.shields.io/badge/Python-3%20%2B%202.7-366994.svg)](https://www.python.org)
 [![MariaDB](https://img.shields.io/badge/MariaDB-latest-A26D37.svg)](https://mariadb.com/docs/release-notes)
 [![PostgreSQL 16](https://img.shields.io/badge/PostgreSQL-16-blue.svg)](https://www.postgresql.org)
 [![Redis 7.2+](https://img.shields.io/badge/Redis-7.2+-DC382D.svg)](https://redis.io)
@@ -59,6 +60,7 @@ Pisco Box is ideal for:
 - Debian Bookworm 64-bit
 - Apache 2.4 + PHP-FPM
 - PHP: 8.4, 8.3, 8.0, 7.4, 7.0, 5.6
+- Python 3 (default) + Python 2.7 (legacy compatibility)
 - MariaDB, PostgreSQL 16, SQLite 3, Redis 7.2+ and Memcached 1.6+
 - Database & Cache Management: phpMyAdmin, pgAdmin, Redis Commander, phpMemcachedAdmin, SQLite Web and Beanstalkd
 - Development Tools: Git, Vim, Curl, Wget, and more
